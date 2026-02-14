@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lotto.event.mapper.LottoNumberMapper">
+
+    <resultMap id="lottoNumberMap" type="com.lotto.event.domain.LottoNumber">
+        <id property="id" column="id"/>
+        <result property="ticketId" column="ticket_id"/>
+        <result property="number" column="number"/>
+    </resultMap>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO lotto_number (ticket_id, number)
+        VALUES (#{ticketId}, #{number})
+    </insert>
+
+    <select id="findByTicket" resultMap="lottoNumberMap">
+        SELECT * FROM lotto_number WHERE ticket_id = #{ticketId} ORDER BY number ASC
+    </select>
+
+    <delete id="deleteByTicket">
+        DELETE FROM lotto_number WHERE ticket_id = #{ticketId}
+    </delete>
+
+</mapper>

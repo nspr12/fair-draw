@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lotto.event.mapper.LottoTicketMapper">
+
+    <resultMap id="ticketMap" type="com.lotto.event.domain.LottoTicket">
+        <id property="id" column="id"/>
+        <result property="participantId" column="participant_id"/>
+        <result property="isPredefined" column="is_predefined"/>
+        <result property="createdAt" column="created_at"/>
+    </resultMap>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO lotto_ticket (participant_id, is_predefined)
+        VALUES (#{participantId}, #{isPredefined})
+    </insert>
+
+    <select id="findByParticipant" resultMap="ticketMap">
+        SELECT * FROM lotto_ticket WHERE participant_id = #{participantId}
+    </select>
+
+</mapper>
