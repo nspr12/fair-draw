@@ -8,4 +8,9 @@
         INSERT INTO result_check_log (participant_id) VALUES (#{participantId})
     </insert>
 
+    <delete id="deleteByEvent">
+        DELETE FROM result_check_log WHERE participant_id IN
+                                           (SELECT id FROM participant WHERE event_id = #{eventId})
+    </delete>
+
 </mapper>

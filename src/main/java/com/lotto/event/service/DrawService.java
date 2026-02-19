@@ -22,6 +22,8 @@ public class DrawService {
     private final LottoNumberMapper lottoNumberMapper;
     private final WinningNumberMapper winningNumberMapper;
     private final WinnerResultMapper winnerResultMapper;
+    private final SmsLogMapper smsLogMapper;
+    private final ResultCheckLogMapper resultCheckLogMapper;
 
     //추첨 실행()
     @Transactional
@@ -157,11 +159,26 @@ public class DrawService {
         result.setMatchedCount(matchedCount);
         result.setPrizeStatus(PrizeStatus.READY.name());
         winnerResultMapper.insert(result);
+
+        //핵심 흐름:
+        //1. 전체 참가자 조회
+        //2. alreadyWon = 이미 당첨된 사람 목록 (중복 당첨 방지)
+        //3. 2등: 참가번호 2000~7000에서 5명 랜덤 뽑기 → 5개 일치하도록 교체
+        //4. 3등: 참가번호 1000~8000에서 44명 랜덤 뽑기 → 4개 일치하도록 교체
+        //5. 4등: 나머지 전체에서 950명 랜덤 뽑기 → 3개 일치하도록 교체
+    }
+
+    // 이벤트 데이터 초기화 (테스트용)
+    @Transactional
+    public void resetEvent(Long eventId) {
+        winnerResultMapper.deleteByEvent(eventId);
+        lottoNumberMapper.deleteByEvent(eventId);
+        lottoTicketMapper.deleteByEvent(eventId);
+        winningNumberMapper.deleteByEvent(eventId);
+        smsLogMapper.deleteByEvent(eventId);
+        resultCheckLogMapper.deleteByEvent(eventId);
+        participantMapper.deleteByEvent(eventId);
+        eventMapper.updateStatus(eventId, EventStatus.ACTIVE.name());
+        log.info("이벤트 {} 데이터 초기화 완료", eventId);
     }
 }
-//핵심 흐름:
-    //1. 전체 참가자 조회
-    //2. alreadyWon = 이미 당첨된 사람 목록 (중복 당첨 방지)
-    //3. 2등: 참가번호 2000~7000에서 5명 랜덤 뽑기 → 5개 일치하도록 교체
-    //4. 3등: 참가번호 1000~8000에서 44명 랜덤 뽑기 → 4개 일치하도록 교체
-    //5. 4등: 나머지 전체에서 950명 랜덤 뽑기 → 3개 일치하도록 교체

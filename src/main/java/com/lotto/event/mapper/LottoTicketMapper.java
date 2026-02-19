@@ -7,4 +7,6 @@ import org.apache.ibatis.annotations.Mapper;
 public interface LottoTicketMapper {
     void insert(LottoTicket ticket);
     LottoTicket findByParticipant(Long participantId);
+
+    void deleteByEvent(Long eventId);
 }

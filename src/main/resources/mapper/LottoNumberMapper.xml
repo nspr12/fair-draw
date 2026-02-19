@@ -23,4 +23,10 @@
         DELETE FROM lotto_number WHERE ticket_id = #{ticketId}
     </delete>
 
+    <delete id="deleteByEvent">
+        DELETE FROM lotto_number WHERE ticket_id IN
+                                       (SELECT lt.id FROM lotto_ticket lt
+                                                              JOIN participant p ON lt.participant_id = p.id
+                                        WHERE p.event_id = #{eventId})
+    </delete>
 </mapper>

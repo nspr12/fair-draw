@@ -19,4 +19,7 @@
         SELECT * FROM winning_number WHERE event_id = #{eventId} ORDER BY number ASC
     </select>
 
+    <delete id="deleteByEvent">
+        DELETE FROM winning_number WHERE event_id = #{eventId}
+    </delete>
 </mapper>

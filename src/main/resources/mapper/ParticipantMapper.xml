@@ -53,4 +53,11 @@
         WHERE id = #{id}
     </update>
 
+    <delete id="deleteByEvent">
+        DELETE FROM participant WHERE event_id = #{eventId}
+    </delete>
+
+    <select id="countByEventForUpdate" resultType="int">
+        SELECT COUNT(*) FROM participant WHERE event_id = #{eventId} FOR UPDATE
+    </select>
 </mapper>

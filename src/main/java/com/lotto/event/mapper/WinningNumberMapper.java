@@ -9,4 +9,5 @@ import java.util.List;
 public interface WinningNumberMapper {
     void insert(WinningNumber winningNumber);
     List<WinningNumber> findByEvent(Long eventId);
+    void deleteByEvent(Long eventId); //
 }
