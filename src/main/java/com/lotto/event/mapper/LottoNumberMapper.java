@@ -10,4 +10,5 @@ public interface LottoNumberMapper {
     void insert(LottoNumber lottoNumber);
     List<LottoNumber> findByTicket(Long ticketId);
     void deleteByTicket(Long ticketId); //당첨번호로교체
+    void deleteByEvent(Long eventId); //
 }

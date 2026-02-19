@@ -16,4 +16,6 @@ public interface ParticipantMapper {
     List<Participant> findAllByEvent(Long eventId);
     List<Participant> findUncheckedWinners(Long eventId);
     void incrementCheckCount(Long id);
+    void deleteByEvent(Long eventId);
+    int countByEventForUpdate(Long eventId);
 }

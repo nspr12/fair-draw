@@ -20,4 +20,9 @@
         SELECT * FROM lotto_ticket WHERE participant_id = #{participantId}
     </select>
 
+    <delete id="deleteByEvent">
+        DELETE FROM lotto_ticket WHERE participant_id IN
+                                       (SELECT id FROM participant WHERE event_id = #{eventId})
+    </delete>
+
 </mapper>

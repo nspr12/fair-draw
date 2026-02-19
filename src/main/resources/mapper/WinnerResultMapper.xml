@@ -26,4 +26,17 @@
         SELECT * FROM winner_result WHERE rank_type = #{rankType}
     </select>
 
+    <select id="countByRank" resultType="java.util.HashMap">
+        SELECT rank_type as rankType, COUNT(*) as cnt
+        FROM winner_result wr
+                 JOIN participant p ON wr.participant_id = p.id
+        WHERE p.event_id = #{eventId}
+        GROUP BY rank_type
+        ORDER BY rank_type
+    </select>
+
+    <delete id="deleteByEvent">
+        DELETE FROM winner_result WHERE participant_id IN
+                                        (SELECT id FROM participant WHERE event_id = #{eventId})
+    </delete>
 </mapper>

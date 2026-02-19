@@ -58,7 +58,7 @@ public class EventParticipantService {
         }
 
         // 4. 참가 인원 제한
-        int currentCount = participantMapper.countByEvent(request.getEventId());
+        int currentCount = participantMapper.countByEventForUpdate(request.getEventId());
         if (currentCount >= MAX_PARTICIPANTS) {
             throw new IllegalStateException("참가 인원이 마감되었습니다.");
         }
