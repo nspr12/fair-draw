@@ -169,7 +169,11 @@
         <label>⚙️ 관리 기능</label>
 
         <button class="admin-btn btn-generate" onclick="generateParticipants()">
-            👥 더미 참가자 10,000명 생성
+            더미 참가자 10,000명 생성 (1~2분 소요)
+        </button>
+
+        <button class="admin-btn btn-reset" onclick="resetData()">
+            DB 초기화
         </button>
 
         <div class="mb-2">
@@ -178,19 +182,15 @@
                    value="01012345678" style="background:#444;color:white;border:1px solid #555;">
         </div>
         <button class="admin-btn btn-draw" onclick="executeDraw()">
-            🎯 추첨 실행
+            추첨 실행
         </button>
 
         <button class="admin-btn btn-remind" onclick="sendRemind()">
-            📩 미확인자 리마인드 발송
+            미확인자 리마인드 발송
         </button>
 
         <button class="admin-btn btn-dashboard" onclick="loadDashboard()">
-            📊 DB 현황 조회
-        </button>
-
-        <button class="admin-btn btn-reset" onclick="resetData()">
-            🗑️ DB 초기화
+            DB 현황 조회
         </button>
 
         <div id="adminResult" class="admin-result" style="display:none;"></div>

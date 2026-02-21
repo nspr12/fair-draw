@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -24,8 +25,12 @@ public class DrawService {
     private final WinnerResultMapper winnerResultMapper;
     private final SmsLogMapper smsLogMapper;
     private final ResultCheckLogMapper resultCheckLogMapper;
+    private final PrizePolicyMapper prizePolicyMapper;
 
-    //추첨 실행()
+    /*
+     * 추첨 실행
+     * 등수별 당첨 조건은 prize_policy 테이블에서 조회 (하드코딩 제거)
+     */
     @Transactional
     public void draw(Long eventId, String predefinedWinnerPhone) {
         // 1. 이벤트 검증
@@ -37,7 +42,13 @@ public class DrawService {
             throw new IllegalStateException("추첨 가능한 상태가 아닙니다.");
         }
 
-        // 2. 당첨번호 6개 생성 및 저장
+        // 2. 당첨 정책 조회 (DB 기반)
+        List<PrizePolicy> policies = prizePolicyMapper.findByEvent(eventId);
+        if (policies.isEmpty()) {
+            throw new IllegalStateException("당첨 정책이 설정되지 않았습니다.");
+        }
+
+        // 3. 당첨번호 6개 생성 및 저장
         List<Integer> winningNumbers = generateWinningNumbers();
         for (Integer number : winningNumbers) {
             WinningNumber wn = new WinningNumber();
@@ -47,66 +58,60 @@ public class DrawService {
         }
         log.info("당첨번호: {}", winningNumbers);
 
-        // 3. 1등 처리 (사전 지정)
+        // 4. 전체 참가자 조회
+        List<Participant> allParticipants = participantMapper.findAllByEvent(eventId);
+        Set<Long> alreadyWon = new HashSet<>();
+
+        // 5. 1등 처리 (사전 지정)
+        PrizePolicy firstPolicy = policies.stream()
+                .filter(p -> p.getRankType() == 1)
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("1등 정책이 없습니다."));
+
         Participant firstWinner = participantMapper.findByEventAndPhone(eventId, predefinedWinnerPhone);
         if (firstWinner == null) {
             throw new IllegalArgumentException("사전 지정된 1등 참가자를 찾을 수 없습니다.");
         }
-        replaceNumbers(firstWinner.getId(), winningNumbers, 6);
-        saveWinnerResult(firstWinner.getId(), 1, 6);
+        replaceNumbers(firstWinner.getId(), winningNumbers, firstPolicy.getMatchCount());
+        saveWinnerResult(firstWinner.getId(), firstPolicy.getRankType(), firstPolicy.getMatchCount());
+        alreadyWon.add(firstWinner.getId());
         log.info("1등 당첨: 참가번호 {}", firstWinner.getParticipantNo());
 
-        // 4. 2등 처리 (5명, 참가번호 2000~7000)
-        List<Participant> allParticipants = participantMapper.findAllByEvent(eventId);
-        Set<Long> alreadyWon = new HashSet<>();
-        alreadyWon.add(firstWinner.getId());
+        // 6. 2등 이상 처리 (정책 기반 반복)
+        for (PrizePolicy policy : policies) {
+            if (policy.getRankType() == 1) continue; // 1등은 이미 처리
 
-        List<Participant> range2 = allParticipants.stream()
-                .filter(p -> p.getParticipantNo() >= 2000 && p.getParticipantNo() <= 7000)
-                .filter(p -> !alreadyWon.contains(p.getId()))
-                .collect(java.util.stream.Collectors.toList());
-        Collections.shuffle(range2);
+            List<Participant> candidates;
 
-        for (int i = 0; i < 5 && i < range2.size(); i++) {
-            Participant winner = range2.get(i);
-            replaceNumbers(winner.getId(), winningNumbers, 5); //번호 교체/할당
-            saveWinnerResult(winner.getId(), 2, 5);            //당첨 결과 저장 (2등)
-            alreadyWon.add(winner.getId());                    //중복 방지 목록에 추가
+            if (policy.getStartNo() != null && policy.getEndNo() != null) {
+                // 참가번호 범위 제한이 있는 경우
+                candidates = allParticipants.stream()
+                        .filter(p -> p.getParticipantNo() >= policy.getStartNo()
+                                && p.getParticipantNo() <= policy.getEndNo())
+                        .filter(p -> !alreadyWon.contains(p.getId()))
+                        .collect(Collectors.toList());
+            } else {
+                // 범위 제한 없는 경우 (4등)
+                candidates = allParticipants.stream()
+                        .filter(p -> !alreadyWon.contains(p.getId()))
+                        .collect(Collectors.toList());
+            }
+
+            Collections.shuffle(candidates);
+
+            int count = Math.min(policy.getPrizeCount(), candidates.size());
+            for (int i = 0; i < count; i++) {
+                Participant winner = candidates.get(i);
+                replaceNumbers(winner.getId(), winningNumbers, policy.getMatchCount());
+                saveWinnerResult(winner.getId(), policy.getRankType(), policy.getMatchCount());
+                alreadyWon.add(winner.getId());
+            }
+            log.info("{}등 당첨: {}명 (정책: {})", policy.getRankType(), count, policy.getDescription());
         }
-        log.info("2등 당첨: {}명", Math.min(5, range2.size()));
-
-        // 5. 3등 처리 (44명, 참가번호 1000~8000)
-        List<Participant> range3 = allParticipants.stream()
-                .filter(p -> p.getParticipantNo() >= 1000 &&  p.getParticipantNo() <= 8000)
-                .filter(p-> !alreadyWon.contains(p.getId()))
-                .collect(java.util.stream.Collectors.toList());
-        Collections.shuffle(range3);
-
-        for (int i = 0; i < 44 && i < range3.size(); i++) {
-            Participant winner = range3.get(i);
-            replaceNumbers(winner.getId(), winningNumbers, 4);
-            saveWinnerResult(winner.getId(), 3, 4);
-            alreadyWon.add(winner.getId());
-        }
-        log.info("3등 당첨: {}명", Math.min(44, range3.size()));
-
-        // 6. 4등 처리 (950명)
-        List<Participant> remaining = allParticipants.stream()
-                .filter(p -> !alreadyWon.contains(p.getId()))
-                .collect(java.util.stream.Collectors.toList());
-        Collections.shuffle(remaining);
-
-        for (int i = 0; i < 950 && i < remaining.size(); i++) {
-            Participant winner = remaining.get(i);
-            replaceNumbers(winner.getId(), winningNumbers, 3);
-            saveWinnerResult(winner.getId(), 4, 3);
-            alreadyWon.add(winner.getId());
-        }
-        log.info("4등 당첨: {}명", Math.min(950, remaining.size()));
 
         // 7. 이벤트 상태 변경 -> DRAWN
         eventMapper.updateStatus(eventId, EventStatus.DRAWN.name());
-        log.info("추첨 완료: 이벤트 {}", eventId);
+        log.info("추첨 완료: 이벤트 {} (총 당첨자: {}명)", eventId, alreadyWon.size());
     }
 
     // 당첨번호 6개 생성 (1~45, 중복 없이, 오름차순)
@@ -119,20 +124,17 @@ public class DrawService {
         return new ArrayList<>(numberSet);
     }
 
-     /*
+    /*
      * 참가자의 로또번호를 당첨되도록 교체
      * matchCount: 당첨번호와 일치시킬 개수 (6=1등, 5=2등, 4=3등, 3=4등)
      */
     private void replaceNumbers(Long participantId, List<Integer> winningNumbers, int matchCount) {
         LottoTicket ticket = lottoTicketMapper.findByParticipant(participantId);
 
-        // 기존 번호 삭제
         lottoNumberMapper.deleteByTicket(ticket.getId());
 
-        // 당첨번호에서 matchCount개를 가져옴
         List<Integer> newNumbers = new ArrayList<>(winningNumbers.subList(0, matchCount));
 
-        // 나머지는 당첨번호에 없는 번호로 채움
         Random random = new Random();
         while (newNumbers.size() < 6) {
             int num = random.nextInt(45) + 1;
@@ -141,7 +143,6 @@ public class DrawService {
             }
         }
 
-        // 저장
         Collections.sort(newNumbers);
         for (Integer num : newNumbers) {
             LottoNumber ln = new LottoNumber();
@@ -159,13 +160,6 @@ public class DrawService {
         result.setMatchedCount(matchedCount);
         result.setPrizeStatus(PrizeStatus.READY.name());
         winnerResultMapper.insert(result);
-
-        //핵심 흐름:
-        //1. 전체 참가자 조회
-        //2. alreadyWon = 이미 당첨된 사람 목록 (중복 당첨 방지)
-        //3. 2등: 참가번호 2000~7000에서 5명 랜덤 뽑기 → 5개 일치하도록 교체
-        //4. 3등: 참가번호 1000~8000에서 44명 랜덤 뽑기 → 4개 일치하도록 교체
-        //5. 4등: 나머지 전체에서 950명 랜덤 뽑기 → 3개 일치하도록 교체
     }
 
     // 이벤트 데이터 초기화 (테스트용)
