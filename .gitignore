@@ -1,37 +1,60 @@
-HELP.md
-.gradle
+# ===== Build =====
+target/
 build/
 !gradle/wrapper/gradle-wrapper.jar
-!**/src/main/**/build/
-!**/src/test/**/build/
 
-### STS ###
-.apt_generated
-.classpath
-.factorypath
-.project
-.settings
-.springBeans
-.sts4-cache
-bin/
-!**/src/main/**/bin/
-!**/src/test/**/bin/
-
-### IntelliJ IDEA ###
-.idea
-*.iws
+# ===== IDE - IntelliJ =====
+.idea/
 *.iml
+*.iws
 *.ipr
 out/
-!**/src/main/**/out/
-!**/src/test/**/out/
 
-### NetBeans ###
-/nbproject/private/
-/nbbuild/
-/dist/
-/nbdist/
-/.nb-gradle/
+# ===== Secret / Config =====
+application-secret.yml
+*.p12
+*.jks
+*.pem
+*.key
 
-### VS Code ###
-.vscode/
+# ===== Environment =====
+.env
+.env.*
+
+# ===== Logs =====
+logs/
+*.log
+*.log.*
+
+# ===== OS =====
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ===== Java =====
+*.class
+*.jar
+*.war
+*.ear
+hs_err_pid*
+replay_pid*
+
+# ===== Gradle =====
+.gradle/
+gradle.properties
+
+# ===== Maven =====
+.mvn/
+mvnw
+mvnw.cmd
+
+# ===== Docker =====
+docker-compose.override.yml
+
+# ===== Misc =====
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/

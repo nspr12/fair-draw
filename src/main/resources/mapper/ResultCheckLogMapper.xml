@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.lotto.event.mapper.ResultCheckLogMapper">
+<mapper namespace="com.fair.draw.mapper.ResultCheckLogMapper">
 
     <insert id="insert">
         INSERT INTO result_check_log (participant_id) VALUES (#{participantId})

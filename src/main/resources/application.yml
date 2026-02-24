@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: fair-draw
+  profiles:
+    include: secret
+  mvc:
+    view:
+      prefix: /WEB-INF/views/
+      suffix: .jsp
+
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+  configuration:
+    map-underscore-to-camel-case: true

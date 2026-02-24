@@ -2,9 +2,9 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.lotto.event.mapper.WinningNumberMapper">
+<mapper namespace="com.fair.draw.mapper.WinningNumberMapper">
 
-    <resultMap id="winningNumberMap" type="com.lotto.event.domain.WinningNumber">
+    <resultMap id="winningNumberMap" type="com.fair.draw.domain.WinningNumber">
         <id property="id" column="id"/>
         <result property="eventId" column="event_id"/>
         <result property="number" column="number"/>
