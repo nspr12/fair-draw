@@ -4,7 +4,7 @@
 
 <mapper namespace="com.fair.draw.mapper.PrizePolicyMapper">
 
-    <select id="findByEvent" resultType="com.fair.draw.domain.PrizePolicy">
+    <select id="findByEvent" resultType="com.fair.draw.domain.EventPrize">
         SELECT id, event_id, rank_type, prize_count, match_count,
                start_no, end_no, description
         FROM prize_policy
