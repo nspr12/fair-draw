@@ -43,7 +43,7 @@ public class DrawService {
         }
 
         // 2. 당첨 정책 조회 (DB 기반)
-        List<PrizePolicy> policies = prizePolicyMapper.findByEvent(eventId);
+        List<EventPrize> policies = prizePolicyMapper.findByEvent(eventId);
         if (policies.isEmpty()) {
             throw new IllegalStateException("당첨 정책이 설정되지 않았습니다.");
         }
@@ -63,7 +63,7 @@ public class DrawService {
         Set<Long> alreadyWon = new HashSet<>();
 
         // 5. 1등 처리 (사전 지정)
-        PrizePolicy firstPolicy = policies.stream()
+        EventPrize firstPolicy = policies.stream()
                 .filter(p -> p.getRankType() == 1)
                 .findFirst()
                 .orElseThrow(() -> new IllegalStateException("1등 정책이 없습니다."));
@@ -78,7 +78,7 @@ public class DrawService {
         log.info("1등 당첨: 참가번호 {}", firstWinner.getParticipantNo());
 
         // 6. 2등 이상 처리 (정책 기반 반복)
-        for (PrizePolicy policy : policies) {
+        for (EventPrize policy : policies) {
             if (policy.getRankType() == 1) continue; // 1등은 이미 처리
 
             List<Participant> candidates;
@@ -154,7 +154,7 @@ public class DrawService {
 
     // 당첨 결과 저장
     private void saveWinnerResult(Long participantId, int rankType, int matchedCount) {
-        WinnerResult result = new WinnerResult();
+        Winner result = new Winner();
         result.setParticipantId(participantId);
         result.setRankType(rankType);
         result.setMatchedCount(matchedCount);

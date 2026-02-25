@@ -9,10 +9,10 @@ import java.time.LocalDateTime;
 public class Participant {
     private Long id;
     private Long eventId;
-    private Integer participantNo;
-    private String phoneNumber;
+    private String phoneNumber;   // 추후 Spring Security의 User ID로 교체 가능
     private Boolean isVerified;
-    private Integer checkCount;
-    private LocalDateTime lastCheckedAt;
-    private LocalDateTime createdAt;
+    private LocalDateTime createdAt; // 응모한 시간 (매우 중요!)
+    // participantNo, checkCount 등 불필요한 필드 제거
 }
+
+

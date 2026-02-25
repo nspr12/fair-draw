@@ -46,7 +46,7 @@ public class ResultService {
                 .collect(Collectors.toList());
 
         // 4. 당첨 결과 조회
-        WinnerResult result = winnerResultMapper.findByParticipant(participant.getId());
+        Winner result = winnerResultMapper.findByParticipant(participant.getId());
 
         // 5. 확인 이력 저장 + 확인 횟수 증가
         resultCheckLogMapper.insert(participant.getId());

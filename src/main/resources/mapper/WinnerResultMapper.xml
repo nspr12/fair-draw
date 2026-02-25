@@ -4,7 +4,7 @@
 
 <mapper namespace="com.fair.draw.mapper.WinnerResultMapper">
 
-    <resultMap id="winnerResultMap" type="com.fair.draw.domain.WinnerResult">
+    <resultMap id="winnerResultMap" type="com.fair.draw.domain.Winner">
         <id property="id" column="id"/>
         <result property="participantId" column="participant_id"/>
         <result property="rankType" column="rank_type"/>
