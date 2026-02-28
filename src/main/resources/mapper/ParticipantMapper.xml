@@ -7,17 +7,14 @@
     <resultMap id="participantMap" type="com.fair.draw.domain.Participant">
         <id property="id" column="id"/>
         <result property="eventId" column="event_id"/>
-        <result property="participantNo" column="participant_no"/>
         <result property="phoneNumber" column="phone_number"/>
         <result property="isVerified" column="is_verified"/>
-        <result property="checkCount" column="check_count"/>
-        <result property="lastCheckedAt" column="last_checked_at"/>
         <result property="createdAt" column="created_at"/>
     </resultMap>
 
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO participant (event_id, participant_no, phone_number, is_verified)
-        VALUES (#{eventId}, #{participantNo}, #{phoneNumber}, #{isVerified})
+        INSERT INTO participant (event_id, phone_number, is_verified)
+        VALUES (#{eventId}, #{phoneNumber}, #{isVerified})
     </insert>
 
     <select id="findById" resultMap="participantMap">
@@ -29,35 +26,23 @@
         WHERE event_id = #{eventId} AND phone_number = #{phoneNumber}
     </select>
 
-    <select id="getMaxParticipantNo" resultType="int">
-        SELECT IFNULL(MAX(participant_no), 0) FROM participant WHERE event_id = #{eventId}
-    </select>
-
     <select id="countByEvent" resultType="int">
         SELECT COUNT(*) FROM participant WHERE event_id = #{eventId}
     </select>
 
-    <select id="findAllByEvent" resultMap="participantMap">
-        SELECT * FROM participant WHERE event_id = #{eventId}
+    <select id="countByEventForUpdate" resultType="int">
+        SELECT COUNT(*) FROM participant WHERE event_id = #{eventId} FOR UPDATE
     </select>
 
-    <select id="findUncheckedWinners" resultMap="participantMap">
-        SELECT p.* FROM participant p
-                            INNER JOIN winner_result wr ON p.id = wr.participant_id
-        WHERE p.event_id = #{eventId} AND p.check_count = 0
+    <select id="findRandomWinnerIds" resultType="java.lang.Long">
+        SELECT id FROM participant
+        WHERE event_id = #{eventId}
+        ORDER BY RAND()
+        LIMIT #{limit}
     </select>
-
-    <update id="incrementCheckCount">
-        UPDATE participant
-        SET check_count = check_count + 1, last_checked_at = NOW()
-        WHERE id = #{id}
-    </update>
 
     <delete id="deleteByEvent">
         DELETE FROM participant WHERE event_id = #{eventId}
     </delete>
 
-    <select id="countByEventForUpdate" resultType="int">
-        SELECT COUNT(*) FROM participant WHERE event_id = #{eventId} FOR UPDATE
-    </select>
 </mapper>

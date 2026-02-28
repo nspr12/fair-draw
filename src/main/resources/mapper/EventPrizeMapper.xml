@@ -2,14 +2,13 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.fair.draw.mapper.PrizePolicyMapper">
+<mapper namespace="com.fair.draw.mapper.EventPrizeMapper">
 
     <select id="findByEvent" resultType="com.fair.draw.domain.EventPrize">
-        SELECT id, event_id, rank_type, prize_count, match_count,
-               start_no, end_no, description
-        FROM prize_policy
+        SELECT id, event_id, rank_type, prize_name, prize_count
+        FROM event_prize
         WHERE event_id = #{eventId}
-        ORDER BY rank_type
+        ORDER BY rank_type ASC
     </select>
 
 </mapper>
