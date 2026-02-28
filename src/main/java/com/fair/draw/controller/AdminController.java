@@ -4,7 +4,7 @@ import com.fair.draw.dto.ApiResponse;
 import com.fair.draw.dto.ParticipantRequest;
 import com.fair.draw.mapper.ParticipantMapper;
 import com.fair.draw.mapper.SmsLogMapper;
-import com.fair.draw.mapper.WinnerResultMapper;
+import com.fair.draw.mapper.WinnerMapper;
 import com.fair.draw.service.DrawService;
 import com.fair.draw.service.EventParticipantService;
 import com.fair.draw.service.ResultService;
@@ -26,7 +26,7 @@ public class AdminController {
     private final ParticipantMapper participantMapper;
     private final SmsService smsService;
     private final ResultService resultService;
-    private final WinnerResultMapper winnerResultMapper;
+    private final WinnerMapper winnerResultMapper;
     private final SmsLogMapper smsLogMapper;
 
     //추첨 실행

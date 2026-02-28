@@ -6,8 +6,6 @@ import com.fair.draw.domain.LottoNumber;
 import com.fair.draw.domain.LottoTicket;
 import com.fair.draw.domain.Participant;
 import com.fair.draw.mapper.EventMapper;
-import com.fair.draw.mapper.LottoNumberMapper;
-import com.fair.draw.mapper.LottoTicketMapper;
 import com.fair.draw.mapper.ParticipantMapper;
 import com.fair.draw.dto.ParticipantRequest;
 import com.fair.draw.dto.ParticipantResponse;

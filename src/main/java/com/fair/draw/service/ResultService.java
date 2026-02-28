@@ -22,7 +22,7 @@ public class ResultService {
     private final LottoTicketMapper lottoTicketMapper;
     private final LottoNumberMapper lottoNumberMapper;
     private final WinningNumberMapper winningNumberMapper;
-    private final WinnerResultMapper winnerResultMapper;
+    private final WinnerMapper winnerResultMapper;
     private final ResultCheckLogMapper resultCheckLogMapper;
     private final SmsService smsService;
 

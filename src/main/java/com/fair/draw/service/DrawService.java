@@ -22,10 +22,10 @@ public class DrawService {
     private final LottoTicketMapper lottoTicketMapper;
     private final LottoNumberMapper lottoNumberMapper;
     private final WinningNumberMapper winningNumberMapper;
-    private final WinnerResultMapper winnerResultMapper;
+    private final WinnerMapper winnerResultMapper;
     private final SmsLogMapper smsLogMapper;
     private final ResultCheckLogMapper resultCheckLogMapper;
-    private final PrizePolicyMapper prizePolicyMapper;
+    private final EventPrizeMapper prizePolicyMapper;
 
     /*
      * 추첨 실행
