@@ -76,4 +76,11 @@ public class AdminController {
         dashboard.put("smsCount", smsLogMapper.countByEvent(eventId));
         return ResponseEntity.ok(ApiResponse.ok(dashboard));
     }
+
+        //DB 초기화
+     @PostMapping("/reset")
+        public ResponseEntity<ApiResponse<Void>> resetData(@RequestParam Long eventId) {
+            drawService.resetEvent(eventId);
+            return ResponseEntity.ok(ApiResponse.ok("데이터가 초기화되었습니다.", null));
+    }
 }

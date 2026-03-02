@@ -1,197 +1,110 @@
-<%--<%@ page contentType="text/html;charset=UTF-8" language="java" %>--%>
-<%--<!DOCTYPE html>--%>
-<%--<html lang="ko">--%>
-<%--<head>--%>
-<%--    <meta charset="UTF-8">--%>
-<%--    <meta name="viewport" content="width=device-width, initial-scale=1.0">--%>
-<%--    <title>🎟️ 이벤트 참가</title>--%>
-<%--    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">--%>
-<%--    <style>--%>
-<%--        body {--%>
-<%--            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);--%>
-<%--            min-height: 100vh;--%>
-<%--            display: flex;--%>
-<%--            align-items: center;--%>
-<%--            justify-content: center;--%>
-<%--        }--%>
-<%--        .card-main {--%>
-<%--            background: white;--%>
-<%--            border-radius: 24px;--%>
-<%--            padding: 40px;--%>
-<%--            box-shadow: 0 20px 60px rgba(0,0,0,0.2);--%>
-<%--            max-width: 480px;--%>
-<%--            width: 90%;--%>
-<%--        }--%>
-<%--        .input-phone {--%>
-<%--            border-radius: 12px;--%>
-<%--            padding: 14px 16px;--%>
-<%--            font-size: 16px;--%>
-<%--            border: 2px solid #e0e0e0;--%>
-<%--        }--%>
-<%--        .input-phone:focus { border-color: #667eea; box-shadow: 0 0 0 3px rgba(102,126,234,0.2); }--%>
-<%--        .btn-main {--%>
-<%--            border-radius: 50px;--%>
-<%--            padding: 14px;--%>
-<%--            font-size: 16px;--%>
-<%--            font-weight: bold;--%>
-<%--            width: 100%;--%>
-<%--            transition: transform 0.2s;--%>
-<%--        }--%>
-<%--        .btn-main:hover { transform: scale(1.02); }--%>
-<%--        .btn-verify { background: #a8edea; border: none; color: #333; }--%>
-<%--        .btn-verify:hover { background: #8fe0db; color: #333; }--%>
-<%--        .btn-submit { background: #667eea; border: none; color: white; }--%>
-<%--        .btn-submit:hover { background: #5a6fd6; color: white; }--%>
-<%--        .verify-row { display: flex; gap: 10px; }--%>
-<%--        .verify-row input { flex: 1; }--%>
-<%--        .verify-row button { white-space: nowrap; border-radius: 12px; padding: 14px 20px; }--%>
-<%--        .lotto-result { display: none; text-align: center; margin-top: 30px; }--%>
-<%--        .lotto-balls { display: flex; justify-content: center; gap: 10px; margin: 20px 0; }--%>
-<%--        .ball {--%>
-<%--            width: 50px; height: 50px;--%>
-<%--            border-radius: 50%;--%>
-<%--            display: flex; align-items: center; justify-content: center;--%>
-<%--            font-weight: bold; font-size: 18px; color: white;--%>
-<%--            animation: popIn 0.3s ease-out;--%>
-<%--        }--%>
-<%--        @keyframes popIn {--%>
-<%--            0% { transform: scale(0); }--%>
-<%--            80% { transform: scale(1.2); }--%>
-<%--            100% { transform: scale(1); }--%>
-<%--        }--%>
-<%--        .ball-1 { background: #fbc531; }--%>
-<%--        .ball-2 { background: #4cd137; }--%>
-<%--        .ball-3 { background: #00a8ff; }--%>
-<%--        .ball-4 { background: #9c88ff; }--%>
-<%--        .ball-5 { background: #e84393; }--%>
-<%--        .ball-6 { background: #fd7979; }--%>
-<%--        .alert-custom { border-radius: 12px; padding: 16px; font-size: 14px; }--%>
-<%--        .back-link {--%>
-<%--            display: inline-block; margin-top: 20px;--%>
-<%--            color: #667eea; text-decoration: none; font-weight: bold;--%>
-<%--        }--%>
-<%--        .back-link:hover { text-decoration: underline; }--%>
-<%--        .step { display: none; }--%>
-<%--        .step.active { display: block; }--%>
-<%--    </style>--%>
-<%--</head>--%>
-<%--<body>--%>
-<%--<div class="card-main">--%>
-<%--    <div id="step1" class="step active">--%>
-<%--        <h3 class="fw-bold text-center mb-1">🎟️ 이벤트 참가</h3>--%>
-<%--        <p class="text-muted text-center mb-4">휴대폰 인증 후 로또 번호를 받으세요!</p>--%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>한정판 드로우 응모하기</title>
+    <style>
+        body { font-family: 'Arial', sans-serif; background-color: #f4f4f5; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .container { background: white; padding: 40px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); width: 100%; max-width: 400px; }
+        h2 { text-align: center; color: #333; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-weight: bold; color: #555; }
+        input[type="text"] { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; background-color: #000; color: #fff; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; font-weight: bold; margin-top: 5px; }
+        button:hover { background-color: #333; }
+        .btn-secondary { background-color: #6c757d; }
+        .btn-secondary:hover { background-color: #5a6268; }
+    </style>
+</head>
+<body>
 
-<%--        <div class="mb-3">--%>
-<%--            <label class="form-label fw-bold">휴대폰 번호</label>--%>
-<%--            <div class="verify-row">--%>
-<%--                <input type="text" id="phoneNumber" class="form-control input-phone"--%>
-<%--                       placeholder="01012345678" maxlength="11">--%>
-<%--                <button class="btn btn-verify fw-bold" onclick="sendVerification()">--%>
-<%--                    인증요청--%>
-<%--                </button>--%>
-<%--            </div>--%>
-<%--        </div>--%>
+<div class="container">
+    <h2>🎁 FairDraw 응모하기</h2>
 
-<%--        <div id="verifySection" class="mb-3" style="display:none;">--%>
-<%--            <label class="form-label fw-bold">인증번호</label>--%>
-<%--            <input type="text" id="verifyCode" class="form-control input-phone"--%>
-<%--                   placeholder="인증번호 6자리" maxlength="6">--%>
-<%--            <small class="text-muted">💡 테스트용 인증번호: <strong>123456</strong></small>--%>
-<%--        </div>--%>
+    <div id="eventStatusBadge" style="text-align: center; color: #e74c3c; font-weight: bold; margin-bottom: 20px;"></div>
 
-<%--        <div id="alertArea"></div>--%>
+    <div class="form-group">
+        <label for="phoneNumber">휴대폰 번호 (- 없이 입력)</label>
+        <input type="text" id="phoneNumber" placeholder="예: 01012345678" maxlength="11">
+        <button type="button" class="btn-secondary" onclick="sendVerification()">인증번호 발송</button>
+    </div>
 
-<%--        <button id="btnParticipate" class="btn btn-main btn-submit mt-3"--%>
-<%--                onclick="participate()" style="display:none;">--%>
-<%--            🎰 참가하기--%>
-<%--        </button>--%>
-<%--    </div>--%>
+    <div class="form-group">
+        <label for="verificationCode">인증번호</label>
+        <input type="text" id="verificationCode" placeholder="인증번호 6자리 입력" maxlength="6">
+    </div>
 
-<%--    <div id="step2" class="step">--%>
-<%--        <div class="lotto-result" id="lottoResult">--%>
-<%--            <h3 class="fw-bold">🎉 참가 완료!</h3>--%>
-<%--            <p class="text-muted">나의 로또 번호</p>--%>
-<%--            <div class="lotto-balls" id="lottoBalls"></div>--%>
-<%--            <p id="participantInfo" class="text-muted"></p>--%>
-<%--            <div class="alert alert-info alert-custom">--%>
-<%--                📩 로또 번호가 문자로 발송되었습니다!--%>
-<%--            </div>--%>
-<%--        </div>--%>
-<%--        <a href="/" class="back-link">← 메인으로 돌아가기</a>--%>
-<%--    </div>--%>
-<%--</div>--%>
+    <input type="hidden" id="eventId" value="1">
 
-<%--<script>--%>
-<%--    function sendVerification() {--%>
-<%--        var phone = document.getElementById('phoneNumber').value;--%>
-<%--        if (!phone || phone.length < 10) {--%>
-<%--            showAlert('휴대폰 번호를 올바르게 입력해주세요.', 'warning');--%>
-<%--            return;--%>
-<%--        }--%>
-<%--        fetch('/api/event/verify/send?phoneNumber=' + phone, { method: 'POST' })--%>
-<%--            .then(function(res) { return res.json(); })--%>
-<%--            .then(function(data) {--%>
-<%--                if (data.success) {--%>
-<%--                    document.getElementById('verifySection').style.display = 'block';--%>
-<%--                    document.getElementById('btnParticipate').style.display = 'block';--%>
-<%--                    showAlert('인증번호가 발송되었습니다! (테스트: 123456)', 'success');--%>
-<%--                } else {--%>
-<%--                    showAlert(data.message, 'danger');--%>
-<%--                }--%>
-<%--            })--%>
-<%--            .catch(function() { showAlert('서버 오류가 발생했습니다.', 'danger'); });--%>
-<%--    }--%>
+    <button type="button" onclick="participateEvent()">응모 완료하기</button>
+</div>
 
-<%--    function participate() {--%>
-<%--        var phone = document.getElementById('phoneNumber').value;--%>
-<%--        var code = document.getElementById('verifyCode').value;--%>
-<%--        if (!code) {--%>
-<%--            showAlert('인증번호를 입력해주세요.', 'warning');--%>
-<%--            return;--%>
-<%--        }--%>
-<%--        fetch('/api/event/participate', {--%>
-<%--            method: 'POST',--%>
-<%--            headers: { 'Content-Type': 'application/json' },--%>
-<%--            body: JSON.stringify({--%>
-<%--                eventId: 1,--%>
-<%--                phoneNumber: phone,--%>
-<%--                verificationCode: code--%>
-<%--            })--%>
-<%--        })--%>
-<%--            .then(function(res) { return res.json(); })--%>
-<%--            .then(function(data) {--%>
-<%--                if (data.success) {--%>
-<%--                    showLottoResult(data.data);--%>
-<%--                } else {--%>
-<%--                    showAlert(data.message, 'danger');--%>
-<%--                }--%>
-<%--            })--%>
-<%--            .catch(function() { showAlert('서버 오류가 발생했습니다.', 'danger'); });--%>
-<%--    }--%>
+<script>
+    const simulatedDate = localStorage.getItem('fairDrawDate');
+    if (simulatedDate) {
+        document.getElementById('eventStatusBadge').innerText = "⏰ 관리자 테스트 모드: " + simulatedDate + " 기준";
+    }
 
-<%--    function showLottoResult(data) {--%>
-<%--        document.getElementById('step1').classList.remove('active');--%>
-<%--        document.getElementById('step2').classList.add('active');--%>
-<%--        var ballColors = ['ball-1', 'ball-2', 'ball-3', 'ball-4', 'ball-5', 'ball-6'];--%>
-<%--        var ballsContainer = document.getElementById('lottoBalls');--%>
-<%--        ballsContainer.innerHTML = '';--%>
-<%--        data.lottoNumbers.forEach(function(num, i) {--%>
-<%--            setTimeout(function() {--%>
-<%--                var ball = document.createElement('div');--%>
-<%--                ball.className = 'ball ' + ballColors[i];--%>
-<%--                ball.textContent = num;--%>
-<%--                ballsContainer.appendChild(ball);--%>
-<%--            }, i * 200);--%>
-<%--        });--%>
-<%--        document.getElementById('participantInfo').textContent =--%>
-<%--            '참가번호: ' + data.participantNo + '번';--%>
-<%--        document.getElementById('lottoResult').style.display = 'block';--%>
-<%--    }--%>
+    // 1. 인증번호 발송 API 호출
+    function sendVerification() {
+        const phone = document.getElementById('phoneNumber').value;
+        if (!phone) {
+            alert("휴대폰 번호를 입력해주세요.");
+            return;
+        }
 
-<%--    function showAlert(msg, type) {--%>
-<%--        document.getElementById('alertArea').innerHTML =--%>
-<%--            '<div class="alert alert-' + type + ' alert-custom">' + msg + '</div>';--%>
-<%--    }--%>
-<%--</script>--%>
-<%--</body>--%>
-<%--</html>--%>
+        fetch('/api/event/verify/send?phoneNumber=' + phone, {
+            method: 'POST'
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert("인증번호가 발송되었습니다. (테스트용: 123456)");
+                } else {
+                    alert("오류: " + data.message);
+                }
+            })
+            .catch(error => console.error('Error:', error));
+    }
+
+    // 2. 이벤트 응모 API 호출
+    function participateEvent() {
+        const eventId = document.getElementById('eventId').value;
+        const phone = document.getElementById('phoneNumber').value;
+        const code = document.getElementById('verificationCode').value;
+
+        if (!phone || !code) {
+            alert("휴대폰 번호와 인증번호를 모두 입력해주세요.");
+            return;
+        }
+
+        const requestData = {
+            eventId: parseInt(eventId),
+            phoneNumber: phone,
+            verificationCode: code
+        };
+
+        fetch('/api/event/participate', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(requestData)
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert("🎉 " + data.message);
+                    window.location.href = "/"; // 메인으로 이동
+                } else {
+                    alert("응모 실패: " + data.message);
+                }
+            })
+            .catch(error => console.error('Error:', error));
+    }
+</script>
+
+</body>
+</html>

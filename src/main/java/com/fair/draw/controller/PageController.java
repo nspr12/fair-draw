@@ -2,6 +2,7 @@ package com.fair.draw.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.time.LocalDate;
 
@@ -38,5 +39,18 @@ public class PageController {
     @GetMapping("/result")
     public String result() {
         return "result";
+    }
+
+    // 관리자 대시보드 페이지
+    @GetMapping("/admin")
+    public String admin() {
+        return "admin";
+    }
+
+    // favicon.ico 없음
+    @GetMapping("favicon.ico")
+    @ResponseBody
+    public void returnNoFavicon() {
+
     }
 }
