@@ -1,10 +1,12 @@
 package com.fair.draw.service;
 
+import com.fair.draw.domain.EventPrize;
 import com.fair.draw.domain.Participant;
 import com.fair.draw.domain.Winner;
 import com.fair.draw.dto.ResultResponse;
 import com.fair.draw.enums.MessageType;
 import com.fair.draw.enums.PrizeStatus;
+import com.fair.draw.mapper.EventPrizeMapper;
 import com.fair.draw.mapper.ParticipantMapper;
 import com.fair.draw.mapper.ResultCheckLogMapper;
 import com.fair.draw.mapper.WinnerMapper;
@@ -24,6 +26,7 @@ public class ResultService {
     private final WinnerMapper winnerMapper;
     private final ResultCheckLogMapper resultCheckLogMapper;
     private final SmsService smsService;
+    private final EventPrizeMapper eventPrizeMapper; //추가
 
     @Transactional
     public ResultResponse checkResult(Long eventId, String phoneNumber) {
@@ -45,9 +48,16 @@ public class ResultService {
             if (PrizeStatus.UNCHECKED.name().equals(winner.getPrizeStatus())) {
                 winnerMapper.updatePrizeStatus(winner.getId(), PrizeStatus.CHECKED.name());
             }
+            //추가
+            EventPrize prize = eventPrizeMapper.findById(winner.getPrizeId());
+            String prizeName = (prize != null) ? prize.getPrizeName() : "스페셜 경품";
+            Integer rank = (prize != null) ? prize.getRankType() : null;
+
             return ResultResponse.builder()
                     .isWinner(true)
-                    .message("🎉 축하합니다! 한정판 드로우에 당첨되셨습니다!")
+                    .rankType(rank)
+                    .prizeName(prizeName)
+                    .message("🎉 축하합니다! " + rank + "등 [" + prizeName + "]에 당첨되셨습니다!")
                     .build();
         } else {
             return ResultResponse.builder()

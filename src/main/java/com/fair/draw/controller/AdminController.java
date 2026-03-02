@@ -8,7 +8,6 @@ import com.fair.draw.mapper.WinnerMapper;
 import com.fair.draw.service.DrawService;
 import com.fair.draw.service.EventParticipantService;
 import com.fair.draw.service.ResultService;
-import com.fair.draw.service.SmsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,23 +21,20 @@ import java.util.Map;
 public class AdminController {
 
     private final DrawService drawService;
-    private final EventParticipantService participantService;  // 추가
+    private final EventParticipantService participantService;
     private final ParticipantMapper participantMapper;
-    private final SmsService smsService;
     private final ResultService resultService;
-    private final WinnerMapper winnerResultMapper;
+    private final WinnerMapper winnerMapper;
     private final SmsLogMapper smsLogMapper;
 
-    //추첨 실행
+    // 추첨실행
     @PostMapping("/draw")
-    public ResponseEntity<ApiResponse<Void>> draw(
-            @RequestParam Long eventId,
-            @RequestParam String predefinedWinnerPhone) {
-        drawService.draw(eventId, predefinedWinnerPhone);
-        return ResponseEntity.ok(ApiResponse.ok("추첨이 완료되었습니다.", null));
+    public ResponseEntity<ApiResponse<Void>> draw(@RequestParam Long eventId) {
+        drawService.draw(eventId);
+        return ResponseEntity.ok(ApiResponse.ok("추첨이 성공적으로 완료되었습니다.", null));
     }
 
-    ///테스트용 더미 참가자 대량 생성
+    // 테스트용 더미 참가자 대량 생성
     @PostMapping("/test/generate-participants")
     public ResponseEntity<ApiResponse<String>> generateTestParticipants(
             @RequestParam Long eventId,
@@ -56,10 +52,11 @@ public class AdminController {
                 participantService.participate(request);
                 created++;
             } catch (Exception e) {
-                // 중복 등 에러는 무시
+                // 중복 응모 등은 스킵
+                System.out.println("응모 실패 사유: " + e.getMessage());
             }
         }
-        return ResponseEntity.ok(ApiResponse.ok(created + "명 생성 완료", null));
+        return ResponseEntity.ok(ApiResponse.ok(created + "명 더미 데이터 생성 완료", null));
     }
 
     // 미확인 당첨자 리마인드 문자 발송
@@ -69,21 +66,14 @@ public class AdminController {
         return ResponseEntity.ok(ApiResponse.ok(count + "명에게 리마인드 발송 완료", null));
     }
 
-    // DB 현황 조회
+    // DB 현황 조회 (대시보드)
     @GetMapping("/dashboard")
-    public ResponseEntity<ApiResponse<Map<String, Object>>> getDashboard(
-            @RequestParam Long eventId) {
+    public ResponseEntity<ApiResponse<Map<String, Object>>> getDashboard(@RequestParam Long eventId) {
         Map<String, Object> dashboard = new HashMap<>();
         dashboard.put("totalParticipants", participantMapper.countByEvent(eventId));
-        dashboard.put("winnerCounts", winnerResultMapper.countByRank(eventId));
+        //countByRank -> countByPrize 로 변경
+        dashboard.put("winnerCounts", winnerMapper.countByPrize(eventId));
         dashboard.put("smsCount", smsLogMapper.countByEvent(eventId));
         return ResponseEntity.ok(ApiResponse.ok(dashboard));
-    }
-
-    //DB 초기화 (테스트용)
-    @PostMapping("/reset")
-    public ResponseEntity<ApiResponse<Void>> resetData(@RequestParam Long eventId) {
-        drawService.resetEvent(eventId);
-        return ResponseEntity.ok(ApiResponse.ok("데이터가 초기화되었습니다.", null));
     }
 }

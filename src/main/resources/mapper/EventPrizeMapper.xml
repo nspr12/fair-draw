@@ -11,4 +11,9 @@
         ORDER BY rank_type ASC
     </select>
 
+    <select id="findById" resultType="com.fair.draw.domain.EventPrize">
+        SELECT id, event_id, rank_type, prize_name, prize_count
+        FROM event_prize
+        WHERE id = #{id}
+    </select>
 </mapper>
