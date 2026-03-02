@@ -5,10 +5,7 @@ import com.fair.draw.domain.EventPrize;
 import com.fair.draw.domain.Winner;
 import com.fair.draw.enums.EventStatus;
 import com.fair.draw.enums.PrizeStatus;
-import com.fair.draw.mapper.EventMapper;
-import com.fair.draw.mapper.EventPrizeMapper;
-import com.fair.draw.mapper.ParticipantMapper;
-import com.fair.draw.mapper.WinnerMapper;
+import com.fair.draw.mapper.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -26,6 +23,8 @@ public class DrawService {
     private final EventPrizeMapper eventPrizeMapper;
     private final ParticipantMapper participantMapper;
     private final WinnerMapper winnerMapper;
+    private final ResultCheckLogMapper resultCheckLogMapper;
+    private final SmsLogMapper smsLogMapper;
 
     /**
      * FairDraw 핵심 추첨 로직 (고정 수량 무작위 추출 및 Bulk Insert)
@@ -89,9 +88,11 @@ public class DrawService {
         log.info("🎉 이벤트 {} 최종 추첨 종료 (총 당첨자: {}명)", eventId, finalWinners.size());
     }
 
-    // 초기화 로직 유지
+    // DB초기화
     @Transactional
     public void resetEvent(Long eventId) {
+        resultCheckLogMapper.deleteByEvent(eventId);  // 추가
+        smsLogMapper.deleteByEvent(eventId);           // 추가
         winnerMapper.deleteByEvent(eventId);
         participantMapper.deleteByEvent(eventId);
         eventMapper.updateStatus(eventId, EventStatus.ACTIVE.name());

@@ -34,7 +34,7 @@
     </update>
 
     <select id="countByPrize" resultType="java.util.HashMap">
-        SELECT ep.prize_name as prizeName, COUNT(w.id) as cnt
+        SELECT ep.rank_type as rankType, ep.prize_name as prizeName, COUNT(w.id) as cnt
         FROM winner w
                  JOIN event_prize ep ON w.prize_id = ep.id
         WHERE ep.event_id = #{eventId}
