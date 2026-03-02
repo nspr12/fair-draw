@@ -1,113 +1,79 @@
 package com.fair.draw.service;
 
-import com.fair.draw.domain.*;
-import com.fair.draw.mapper.*;
+import com.fair.draw.domain.Participant;
+import com.fair.draw.domain.Winner;
 import com.fair.draw.dto.ResultResponse;
+import com.fair.draw.enums.MessageType;
+import com.fair.draw.enums.PrizeStatus;
+import com.fair.draw.mapper.ParticipantMapper;
+import com.fair.draw.mapper.ResultCheckLogMapper;
+import com.fair.draw.mapper.WinnerMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import com.fair.draw.enums.MessageType;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class ResultService {
 
-    //필드주입
     private final ParticipantMapper participantMapper;
-    private final LottoTicketMapper lottoTicketMapper;
-    private final LottoNumberMapper lottoNumberMapper;
-    private final WinningNumberMapper winningNumberMapper;
-    private final WinnerMapper winnerResultMapper;
+    private final WinnerMapper winnerMapper;
     private final ResultCheckLogMapper resultCheckLogMapper;
     private final SmsService smsService;
 
     @Transactional
     public ResultResponse checkResult(Long eventId, String phoneNumber) {
-        // 1. 참가자 조회
+
+        // 1. 참가자 조회 (응모 내역 확인)
         Participant participant = participantMapper.findByEventAndPhone(eventId, phoneNumber);
         if (participant == null) {
-            throw new IllegalArgumentException("참가 이력이 없는 번호입니다.");
+            throw new IllegalArgumentException("해당 이벤트에 응모한 내역이 없습니다.");
         }
 
-        // 2. 내 로또번호 조회
-        LottoTicket ticket = lottoTicketMapper.findByParticipant(participant.getId());
-        List<Integer> myNumbers = lottoNumberMapper.findByTicket(ticket.getId()).stream()
-                .map(LottoNumber::getNumber)
-                .collect(Collectors.toList());
-
-        // 3. 당첨번호 조회
-        List<Integer> winningNumbers = winningNumberMapper.findByEvent(eventId).stream()
-                .map(WinningNumber::getNumber)
-                .collect(Collectors.toList());
-
-        // 4. 당첨 결과 조회
-        Winner result = winnerResultMapper.findByParticipant(participant.getId());
-
-        // 5. 확인 이력 저장 + 확인 횟수 증가
+        // 2. 결과 확인 이력(로그) 저장
         resultCheckLogMapper.insert(participant.getId());
-        int checkCount = participant.getCheckCount();
-        participantMapper.incrementCheckCount(participant.getId());
 
-        // 6. 응답 분기
-        if (checkCount == 0) {
-            // 최초 확인: 등수까지 공개
-            if (result != null) {
-                return ResultResponse.builder()
-                        .isWinner(true)
-                        .rankType(result.getRankType())
-                        .matchedCount(result.getMatchedCount())
-                        .myNumbers(myNumbers)
-                        .winningNumbers(winningNumbers)
-                        .message(result.getRankType() + "등에 당첨되었습니다! 축하합니다!")
-                        .build();
-            } else {
-                return ResultResponse.builder()
-                        .isWinner(false)
-                        .myNumbers(myNumbers)
-                        .winningNumbers(winningNumbers)
-                        .message("아쉽지만 당첨되지 않았습니다.")
-                        .build();
+        // 3. 당첨 여부 확인 (핵심: 로또 번호 비교 폐기, 상태값 조회로 단순화)
+        Winner winner = winnerMapper.findByParticipant(participant.getId());
+
+        if (winner != null) {
+            // 미확인(UNCHECKED) 상태라면 확인 완료(CHECKED)로 업데이트
+            if (PrizeStatus.UNCHECKED.name().equals(winner.getPrizeStatus())) {
+                winnerMapper.updatePrizeStatus(winner.getId(), PrizeStatus.CHECKED.name());
             }
+            return ResultResponse.builder()
+                    .isWinner(true)
+                    .message("🎉 축하합니다! 한정판 드로우에 당첨되셨습니다!")
+                    .build();
         } else {
-            // 두 번째 이후: 당첨/미당첨만
-            if (result != null) {
-                return ResultResponse.builder()
-                        .isWinner(true)
-                        .myNumbers(myNumbers)
-                        .winningNumbers(winningNumbers)
-                        .message("당첨된 이력이 있습니다.")
-                        .build();
-            } else {
-                return ResultResponse.builder()
-                        .isWinner(false)
-                        .myNumbers(myNumbers)
-                        .winningNumbers(winningNumbers)
-                        .message("당첨되지 않았습니다.")
-                        .build();
-            }
+            return ResultResponse.builder()
+                    .isWinner(false)
+                    .message("아쉽지만 이번 드로우에는 당첨되지 않았습니다. 다음 기회를 노려주세요!")
+                    .build();
         }
     }
 
     // 미확인 당첨자에게 리마인드 문자 발송
     @Transactional
     public int sendRemindToUncheckedWinners(Long eventId) {
-        List<Participant> unchecked = participantMapper.findUncheckedWinners(eventId);
+        // XML에서 만들어둔 '미확인자 ID 목록 조회' 쿼리 사용
+        List<Long> uncheckedIds = winnerMapper.findUncheckedParticipantIds(eventId);
 
-        for (Participant p : unchecked) {
+        for (Long pId : uncheckedIds) {
+            Participant p = participantMapper.findById(pId);
             smsService.send(
                     p.getId(),
                     p.getPhoneNumber(),
                     MessageType.CHECK_REMIND.name(),
-                    "[로또 이벤트] 당첨 결과를 아직 확인하지 않으셨습니다. 홈페이지에서 확인해주세요!"
+                    "[FairDraw] 당첨 결과를 아직 확인하지 않으셨습니다. 홈페이지에서 확인해주세요!"
             );
         }
 
-        log.info("미확인 당첨자 리마인드 발송: {}명", unchecked.size());
-        return unchecked.size();
+        log.info("미확인 당첨자 리마인드 발송: {}명", uncheckedIds.size());
+        return uncheckedIds.size();
     }
 }
