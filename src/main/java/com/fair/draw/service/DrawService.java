@@ -42,37 +42,59 @@ public class DrawService {
             throw new IllegalStateException("추첨 가능한 상태가 아닙니다.");
         }
 
-        // 2. 경품 정책 조회 (예: 1등 아이패드 1명, 2등 에어팟 5명...) ☆(등수 제거 고민 중)
+        // 2. 경품 정책 조회
         List<EventPrize> prizes = eventPrizeMapper.findByEvent(eventId);
         if (prizes.isEmpty()) {
             throw new IllegalStateException("당첨 경품 정책이 설정되지 않았습니다.");
         }
 
+        //  [최적화 & 중복 방지]
+            // 1등부터 4등까지 필요한 총 경품 개수를 먼저 구합니다.
+        int totalPrizeCount = prizes.stream().mapToInt(EventPrize::getPrizeCount).sum();
+
+        // 전체 수량만큼 DB에서 한 번의 쿼리로 무작위 추출 (DB 난수 추출은 중복이 발생하지 않음)
+        List<Long> randomWinnerIds = participantMapper.findRandomWinnerIds(eventId, totalPrizeCount);
+
         List<Winner> finalWinners = new ArrayList<>();
+        int currentIndex = 0;
 
-        // 3. 각 경품별로 추첨 진행
+        // 3. 뽑혀온 당첨자들을 1등부터 순서대로 할당
         for (EventPrize prize : prizes) {
-            // [핵심] 자바 메모리로 10만 명을 불러오기 X
-            // DB 단에서 ORDER BY RAND()를 통해 필요한 수량(T/O)만큼만 빠르게 ID를 추출
-            List<Long> winnerIds = participantMapper.findRandomWinnerIds(eventId, prize.getPrizeCount());
+            int allocatedCount = 0; // 실제 할당된 인원 수
 
-            for (Long participantId : winnerIds) {
+            for (int i = 0; i < prize.getPrizeCount(); i++) {
+                // 경품 수보다 참가자가 적을 경우를 대비한 안전 장치
+                if (currentIndex >= randomWinnerIds.size()) {
+                    break;
+                }
+
+                Long participantId = randomWinnerIds.get(currentIndex++);
                 Winner winner = new Winner();
                 winner.setParticipantId(participantId);
                 winner.setPrizeId(prize.getId());
                 winner.setPrizeStatus(PrizeStatus.UNCHECKED.name());
                 finalWinners.add(winner);
+                allocatedCount++;
             }
-            log.info("[추첨 완료] {}등 ({}): {}명 당첨", prize.getRankType(), prize.getPrizeName(), winnerIds.size());
+            log.info("[추첨 완료] {}등 ({}): {}명 당첨", prize.getRankType(), prize.getPrizeName(), allocatedCount);
         }
 
-        // 4. 당첨자 벌크 인서트 (네트워크 통신 최소화)
+        // 4. 벌크 인서트
         if (!finalWinners.isEmpty()) {
             winnerMapper.insertWinners(finalWinners);
         }
 
-        // 5. 이벤트 상태를 '추첨 완료(DRAWN)'로 변경
+        // 5. 이벤트 상태 변경
         eventMapper.updateStatus(eventId, EventStatus.DRAWN.name());
         log.info("🎉 이벤트 {} 최종 추첨 종료 (총 당첨자: {}명)", eventId, finalWinners.size());
+    }
+
+    // 초기화 로직 유지
+    @Transactional
+    public void resetEvent(Long eventId) {
+        winnerMapper.deleteByEvent(eventId);
+        participantMapper.deleteByEvent(eventId);
+        eventMapper.updateStatus(eventId, EventStatus.ACTIVE.name());
+        log.info("이벤트 {} 데이터 초기화 완료", eventId);
     }
 }

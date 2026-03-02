@@ -4,7 +4,7 @@ import lombok.Builder;
 import lombok.Getter;
 import java.util.List;
 
-//이벤트 참가 성공 시 응답 DTO
+//응모 완료 응답
 @Getter
 @Builder
 public class ParticipantResponse {

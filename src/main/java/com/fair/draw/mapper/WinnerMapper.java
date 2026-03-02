@@ -2,14 +2,6 @@ package com.fair.draw.mapper;
 
 import com.fair.draw.domain.Winner;
 import org.apache.ibatis.annotations.Mapper;
-
-import java.util.List;
-import java.util.Map;
-
-package com.fair.draw.mapper;
-
-import com.fair.draw.domain.Winner;
-import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;

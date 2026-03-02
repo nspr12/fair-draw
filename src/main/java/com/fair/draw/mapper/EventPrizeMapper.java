@@ -9,4 +9,7 @@ import java.util.List;
 public interface EventPrizeMapper {
     // 이벤트의 경품 정책 목록 조회
     List<EventPrize> findByEvent(Long eventId);
+
+    //추가
+    EventPrize findById(Long id);
 }
