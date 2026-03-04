@@ -4,105 +4,116 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>한정판 드로우 응모하기</title>
+    <title>FairDraw - 응모하기</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { font-family: 'Arial', sans-serif; background-color: #f4f4f5; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .container { background: white; padding: 40px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); width: 100%; max-width: 400px; }
-        h2 { text-align: center; color: #333; }
-        .form-group { margin-bottom: 20px; }
-        label { display: block; margin-bottom: 8px; font-weight: bold; color: #555; }
-        input[type="text"] { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }
-        button { width: 100%; padding: 12px; background-color: #000; color: #fff; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; font-weight: bold; margin-top: 5px; }
-        button:hover { background-color: #333; }
-        .btn-secondary { background-color: #6c757d; }
-        .btn-secondary:hover { background-color: #5a6268; }
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap');
+        body { font-family: 'Noto Sans KR', sans-serif; }
     </style>
 </head>
-<body>
+<body class="bg-gray-950 text-white min-h-screen flex flex-col">
 
-<div class="container">
-    <h2>🎁 FairDraw 응모하기</h2>
+<nav class="relative z-10 flex items-center justify-between px-8 py-6 bg-gray-950/80 backdrop-blur-sm border-b border-gray-800">
+    <a href="/" class="flex items-center gap-2 text-2xl font-bold tracking-tight">
+        <img src="/static/logo.png" alt="FairDraw" class="h-12 w-11">
+        <span class="text-yellow-400">Fair</span><span class="text-white">Draw</span>
+    </a>
+    <a href="/admin" class="text-sm text-gray-400 hover:text-white transition">관리자</a>
+</nav>
 
-    <div id="eventStatusBadge" style="text-align: center; color: #e74c3c; font-weight: bold; margin-bottom: 20px;"></div>
+<main class="flex-1 flex items-center justify-center px-4 py-10">
+    <div class="bg-gray-900/80 backdrop-blur-sm border border-gray-800 rounded-2xl p-10 w-full max-w-md min-h-[520px] shadow-2xl flex flex-col justify-center">
 
-    <div class="form-group">
-        <label for="phoneNumber">휴대폰 번호 (- 없이 입력)</label>
-        <input type="text" id="phoneNumber" placeholder="예: 01012345678" maxlength="11">
-        <button type="button" class="btn-secondary" onclick="sendVerification()">인증번호 발송</button>
+        <h2 class="text-2xl font-bold text-center mb-2">응모하기</h2>
+        <p class="text-gray-400 text-sm text-center mb-6">휴대폰 인증 후 응모가 완료됩니다.</p>
+
+        <div id="eventStatusBadge" class="text-center text-xs text-red-400 font-semibold mb-4"></div>
+
+        <div class="mb-4">
+            <label class="block text-sm font-semibold text-gray-300 mb-2">휴대폰 번호</label>
+            <div class="flex gap-2">
+                <input type="text" id="phoneNumber" placeholder="01012345678" maxlength="11"
+                       class="flex-1 px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-yellow-400 transition">
+                <button onclick="sendVerification()"
+                        class="px-5 py-3 bg-gray-700 hover:bg-gray-600 text-white font-semibold rounded-lg transition whitespace-nowrap">
+                    인증 발송
+                </button>
+            </div>
+        </div>
+
+        <div class="mb-6">
+            <label class="block text-sm font-semibold text-gray-300 mb-2">인증번호</label>
+            <input type="text" id="verificationCode" placeholder="인증번호 6자리" maxlength="6"
+                   class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-yellow-400 transition">
+        </div>
+
+        <input type="hidden" id="eventId" value="1">
+
+        <button onclick="participateEvent()"
+                class="w-full py-3.5 bg-yellow-400 hover:bg-yellow-300 text-gray-900 font-bold rounded-lg transition text-lg">
+            응모 완료하기
+        </button>
+
+        <a href="/" class="block text-center text-sm text-gray-500 hover:text-gray-300 mt-4 transition">
+            ← 메인으로 돌아가기
+        </a>
     </div>
-
-    <div class="form-group">
-        <label for="verificationCode">인증번호</label>
-        <input type="text" id="verificationCode" placeholder="인증번호 6자리 입력" maxlength="6">
-    </div>
-
-    <input type="hidden" id="eventId" value="1">
-
-    <button type="button" onclick="participateEvent()">응모 완료하기</button>
-</div>
+</main>
 
 <script>
-    const simulatedDate = localStorage.getItem('fairDrawDate');
+    var simulatedDate = localStorage.getItem('fairDrawDate');
     if (simulatedDate) {
-        document.getElementById('eventStatusBadge').innerText = "⏰ 관리자 테스트 모드: " + simulatedDate + " 기준";
+        document.getElementById('eventStatusBadge').innerText = '테스트 모드: ' + simulatedDate + ' 기준';
     }
 
-    // 1. 인증번호 발송 API 호출
     function sendVerification() {
-        const phone = document.getElementById('phoneNumber').value;
+        var phone = document.getElementById('phoneNumber').value;
         if (!phone) {
-            alert("휴대폰 번호를 입력해주세요.");
+            alert('휴대폰 번호를 입력해주세요.');
             return;
         }
 
-        fetch('/api/event/verify/send?phoneNumber=' + phone, {
-            method: 'POST'
-        })
-            .then(response => response.json())
-            .then(data => {
+        fetch('/api/event/verify/send?phoneNumber=' + phone, { method: 'POST' })
+            .then(function(res) { return res.json(); })
+            .then(function(data) {
                 if (data.success) {
-                    alert("인증번호가 발송되었습니다. (테스트용: 123456)");
+                    alert('인증번호가 발송되었습니다. (테스트용: 123456)');
                 } else {
-                    alert("오류: " + data.message);
+                    alert('오류: ' + data.message);
                 }
             })
-            .catch(error => console.error('Error:', error));
+            .catch(function(e) { console.error(e); });
     }
 
-    // 2. 이벤트 응모 API 호출
     function participateEvent() {
-        const eventId = document.getElementById('eventId').value;
-        const phone = document.getElementById('phoneNumber').value;
-        const code = document.getElementById('verificationCode').value;
+        var eventId = document.getElementById('eventId').value;
+        var phone = document.getElementById('phoneNumber').value;
+        var code = document.getElementById('verificationCode').value;
 
         if (!phone || !code) {
-            alert("휴대폰 번호와 인증번호를 모두 입력해주세요.");
+            alert('휴대폰 번호와 인증번호를 모두 입력해주세요.');
             return;
         }
-
-        const requestData = {
-            eventId: parseInt(eventId),
-            phoneNumber: phone,
-            verificationCode: code
-        };
 
         fetch('/api/event/participate', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(requestData)
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                eventId: parseInt(eventId),
+                phoneNumber: phone,
+                verificationCode: code
+            })
         })
-            .then(response => response.json())
-            .then(data => {
+            .then(function(res) { return res.json(); })
+            .then(function(data) {
                 if (data.success) {
-                    alert("🎉 " + data.message);
-                    window.location.href = "/"; // 메인으로 이동
+                    alert(data.message);
+                    window.location.href = '/';
                 } else {
-                    alert("응모 실패: " + data.message);
+                    alert('응모 실패: ' + data.message);
                 }
             })
-            .catch(error => console.error('Error:', error));
+            .catch(function(e) { console.error(e); });
     }
 </script>
 

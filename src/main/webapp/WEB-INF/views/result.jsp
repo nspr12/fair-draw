@@ -4,91 +4,100 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>한정판 드로우 결과 확인</title>
+    <title>FairDraw - 결과 확인</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { font-family: 'Arial', sans-serif; background-color: #111; color: #fff; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .container { background: #222; padding: 40px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); width: 100%; max-width: 400px; text-align: center; }
-        h2 { color: #f1c40f; margin-bottom: 20px; }
-        .form-group { margin-bottom: 20px; text-align: left; }
-        label { display: block; margin-bottom: 8px; font-weight: bold; color: #ccc; }
-        input[type="text"] { width: 100%; padding: 12px; border: 1px solid #444; background: #333; color: #fff; border-radius: 5px; box-sizing: border-box; }
-        button { width: 100%; padding: 14px; background-color: #f1c40f; color: #111; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; font-weight: bold; margin-top: 10px; transition: 0.3s; }
-        button:hover { background-color: #d4ac0d; }
-
-        /* 결과 메시지 박스 스타일 */
-        #resultBox { margin-top: 25px; padding: 20px; border-radius: 8px; display: none; font-size: 1.1em; line-height: 1.5; }
-        .winner { background-color: #2ecc71; color: #111; font-weight: bold; animation: pop 0.5s ease-out; }
-        .loser { background-color: #e74c3c; color: #fff; }
-
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap');
+        body { font-family: 'Noto Sans KR', sans-serif; }
         @keyframes pop {
             0% { transform: scale(0.8); opacity: 0; }
             100% { transform: scale(1); opacity: 1; }
         }
+        .animate-pop { animation: pop 0.5s ease-out; }
     </style>
 </head>
-<body>
+<body class="bg-gray-950 text-white min-h-screen flex flex-col">
 
-<div class="container">
-    <h2>🏆 당첨 결과 확인</h2>
+<nav class="relative z-10 flex items-center justify-between px-8 py-6 bg-gray-950/80 backdrop-blur-sm border-b border-gray-800">
+    <a href="/" class="flex items-center gap-2 text-2xl font-bold tracking-tight">
+        <img src="/static/logo.png" alt="FairDraw" class="h-12 w-11">
+        <span class="text-yellow-400">Fair</span><span class="text-white">Draw</span>
+    </a>
+    <a href="/admin" class="text-sm text-gray-400 hover:text-white transition">관리자</a>
+</nav>
 
-    <div id="eventStatusBadge" style="text-align: center; color: #e74c3c; font-weight: bold; margin-bottom: 20px;"></div>
+<main class="flex-1 flex items-center justify-center px-4 py-10">
+    <div class="bg-gray-900/80 backdrop-blur-sm border border-gray-800 rounded-2xl p-10 w-full max-w-md min-h-[520px] shadow-2xl flex flex-col justify-center">
 
-    <p style="color: #aaa; font-size: 0.9em; margin-bottom: 30px;">응모하신 휴대폰 번호를 입력해 주세요.</p>
+        <h2 class="text-2xl font-bold text-center mb-2">당첨 결과 확인</h2>
+        <p class="text-gray-400 text-sm text-center mb-6">응모하신 휴대폰 번호를 입력해주세요.</p>
 
-    <div class="form-group">
-        <label for="phoneNumber">휴대폰 번호 (- 없이 입력)</label>
-        <input type="text" id="phoneNumber" placeholder="예: 01012345678" maxlength="11">
+        <div id="eventStatusBadge" class="text-center text-xs text-red-400 font-semibold mb-4"></div>
+
+        <div class="mb-6">
+            <label class="block text-sm font-semibold text-gray-300 mb-2">휴대폰 번호</label>
+            <input type="text" id="phoneNumber" placeholder="01012345678" maxlength="11"
+                   class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-yellow-400 transition">
+        </div>
+
+        <input type="hidden" id="eventId" value="1">
+
+        <button onclick="checkResult()"
+                class="w-full py-3.5 bg-yellow-400 hover:bg-yellow-300 text-gray-900 font-bold rounded-lg transition text-lg mb-4">
+            결과 확인
+        </button>
+
+        <div id="resultBox" class="hidden rounded-lg p-5 text-center animate-pop"></div>
+
+        <a href="/" class="block text-center text-sm text-gray-500 hover:text-gray-300 mt-4 transition">
+            ← 메인으로 돌아가기
+        </a>
     </div>
-
-    <input type="hidden" id="eventId" value="1">
-
-    <button type="button" onclick="checkResult()">결과 보기</button>
-
-    <div id="resultBox"></div>
-</div>
+</main>
 
 <script>
-    const simulatedDate = localStorage.getItem('fairDrawDate');
+    var simulatedDate = localStorage.getItem('fairDrawDate');
     if (simulatedDate) {
-        document.getElementById('eventStatusBadge').innerText = "⏰ 관리자 테스트 모드: " + simulatedDate + " 기준";
+        document.getElementById('eventStatusBadge').innerText = '테스트 모드: ' + simulatedDate + ' 기준';
     }
 
     function checkResult() {
-        const eventId = document.getElementById('eventId').value;
-        const phone = document.getElementById('phoneNumber').value;
-        const resultBox = document.getElementById('resultBox');
+        var eventId = document.getElementById('eventId').value;
+        var phone = document.getElementById('phoneNumber').value;
+        var resultBox = document.getElementById('resultBox');
+        var simulatedDate = localStorage.getItem('fairDrawDate');
 
         if (!phone) {
-            alert("휴대폰 번호를 입력해주세요.");
+            alert('휴대폰 번호를 입력해주세요.');
             return;
         }
 
-        // 결과 박스 초기화
-        resultBox.style.display = 'none';
-        resultBox.className = '';
+        resultBox.className = 'hidden';
 
-        // API 호출 (GET 방식)
-        fetch('/api/event/result?eventId=' + eventId + '&phoneNumber=' + phone)
-            .then(response => response.json())
-            .then(data => {
+        var url = '/api/event/result?eventId=' + eventId + '&phoneNumber=' + phone;
+        if (simulatedDate) {
+            url += '&simulatedDate=' + simulatedDate;
+        }
+
+        fetch(url)
+            .then(function(res) { return res.json(); })
+            .then(function(data) {
                 if (data.success) {
-                    const resultData = data.data;
-                    resultBox.style.display = 'block';
+                    var r = data.data;
+                    resultBox.className = 'rounded-lg p-5 text-center animate-pop mt-4';
 
-                    if (resultData.isWinner) {
-                        // 당첨 시 (우리가 추가했던 등수와 상품명이 여기서 빛을 발합니다!)
-                        resultBox.className = 'winner';
-                        resultBox.innerHTML = resultData.message + "<br><br>🎁 <strong>" + resultData.prizeName + "</strong>";
+                    if (r.isWinner) {
+                        resultBox.className += ' bg-green-500/20 border border-green-500/30';
+                        resultBox.innerHTML = '<p class="text-green-400 font-bold text-lg">' + r.message + '</p><p class="text-white mt-2 font-semibold">' + r.prizeName + '</p>';
                     } else {
-                        // 미당첨 시
-                        resultBox.className = 'loser';
-                        resultBox.innerHTML = resultData.message;
+                        resultBox.className += ' bg-red-500/20 border border-red-500/30';
+                        resultBox.innerHTML = '<p class="text-red-400 font-bold">' + r.message + '</p>';
                     }
                 } else {
-                    alert("조회 실패: " + data.message);
+                    alert('조회 실패: ' + data.message);
                 }
             })
-            .catch(error => console.error('Error:', error));
+            .catch(function(e) { console.error(e); });
     }
 </script>
 
