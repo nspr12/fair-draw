@@ -3,90 +3,145 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>관리자 대시보드</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FairDraw Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { font-family: 'Arial', sans-serif; background-color: #f4f4f5; display: flex; justify-content: center; padding: 40px 0; margin: 0; }
-        .container { background: white; padding: 40px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); width: 100%; max-width: 600px; }
-        h2 { color: #111; margin-top: 0; border-bottom: 2px solid #000; padding-bottom: 10px; }
-        .section { margin-bottom: 30px; padding: 20px; background: #f8f9fa; border-radius: 8px; border: 1px solid #ddd; }
-        h3 { margin-top: 0; font-size: 1.1em; color: #333; }
-
-        .stat-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 15px; }
-        .stat-box { background: #fff; padding: 15px; border-radius: 5px; border: 1px solid #eee; text-align: center; font-weight: bold; }
-        .stat-num { font-size: 1.5em; color: #e74c3c; display: block; margin-top: 5px; }
-
-        .winner-list { background: #fff; padding: 15px; border-radius: 5px; border: 1px solid #eee; margin-top: 10px; }
-        .winner-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #f0f0f0; font-size: 0.95em; }
-        .winner-row:last-child { border-bottom: none; }
-
-        input[type="date"] { padding: 10px; border: 1px solid #ccc; border-radius: 5px; }
-        button { padding: 10px 15px; background-color: #111; color: #fff; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; transition: 0.2s; }
-        button:hover { background-color: #444; }
-        .btn-draw { background-color: #e74c3c; width: 100%; margin-top: 10px; padding: 15px; font-size: 1.1em; }
-        .btn-draw:hover { background-color: #c0392b; }
-        .btn-reset { background-color: #888; width: 100%; margin-top: 10px; padding: 12px; }
-        .btn-reset:hover { background-color: #666; }
-        .btn-home { background: transparent; color: #000; text-decoration: underline; padding: 0; margin-bottom: 20px; display: block; }
-
-        .progress-bar { display: none; margin-top: 10px; }
-        .progress-bar .bar { height: 20px; background: #e0e0e0; border-radius: 10px; overflow: hidden; }
-        .progress-bar .fill { height: 100%; background: #2ecc71; width: 0%; transition: width 0.3s; }
-        .progress-text { font-size: 0.85em; color: #666; margin-top: 5px; }
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap');
+        body { font-family: 'Noto Sans KR', sans-serif; }
     </style>
 </head>
-<body>
+<body class="bg-gray-950 text-white min-h-screen flex flex-col">
 
-<div class="container">
-    <button class="btn-home" onclick="location.href='/'">← 메인으로 돌아가기</button>
-    <h2>FairDraw Admin</h2>
+<!-- 네비게이션 바 -->
+<nav class="flex items-center justify-between px-8 py-6 bg-gray-950/80 backdrop-blur-sm border-b border-gray-800">
+    <a href="/" class="flex items-center gap-2 text-2xl font-bold tracking-tight">
+        <img src="/static/logo.png" alt="FairDraw" class="h-12 w-11">
+        <span class="text-yellow-400">Fair</span><span class="text-white">Draw</span>
+    </a>
+    <div class="flex items-center gap-4">
+        <span class="text-xs text-gray-500 bg-gray-800 px-3 py-1 rounded-full">Admin</span>
+        <a href="/" class="text-sm text-gray-400 hover:text-white transition">메인으로</a>
+    </div>
+</nav>
 
-    <!-- 타임머신 -->
-    <div class="section">
-        <h3>테스트용 날짜 설정</h3>
-        <p style="font-size:0.8em; color:#666;">이벤트 상태를 특정 날짜 기준으로 확인할 수 있습니다.</p>
+<!-- 대시보드 콘텐츠 -->
+<main class="flex-1 px-8 py-8 max-w-6xl mx-auto w-full">
 
-        <input type="date" id="simulatedDateInput" style="margin-bottom: 10px;">
-        <button onclick="saveSimulatedDate()">적용</button>
-        <button onclick="clearSimulatedDate()" style="background:#888;">초기화</button>
+    <!-- 페이지 제목 -->
+    <h1 class="text-xl font-bold mb-6">관리자 대시보드</h1>
 
-        <div style="margin-top: 10px; padding-top: 10px; border-top: 1px dashed #ccc;">
-            <button onclick="setQuickDate('2025-02-15')" style="background-color: #2ecc71; font-size: 0.85em; padding: 8px;">이벤트 기간 (2/15)</button>
-            <button onclick="setQuickDate('2025-04-02')" style="background-color: #9b59b6; font-size: 0.85em; padding: 8px;">발표 기간 (4/2)</button>
+    <!-- 상단 통계 카드 4열 -->
+    <div class="grid grid-cols-4 gap-4 mb-6">
+        <div class="bg-gray-900 border border-gray-800 rounded-xl p-5">
+            <p class="text-xs text-gray-400 mb-1">총 응모자</p>
+            <p class="text-2xl font-bold text-white" id="statTotal">-</p>
+        </div>
+        <div class="bg-gray-900 border border-gray-800 rounded-xl p-5">
+            <p class="text-xs text-gray-400 mb-1">당첨자</p>
+            <p class="text-2xl font-bold text-yellow-400" id="statWinners">-</p>
+        </div>
+        <div class="bg-gray-900 border border-gray-800 rounded-xl p-5">
+            <p class="text-xs text-gray-400 mb-1">SMS 발송</p>
+            <p class="text-2xl font-bold text-blue-400" id="statSms">-</p>
+        </div>
+        <div class="bg-gray-900 border border-gray-800 rounded-xl p-5">
+            <p class="text-xs text-gray-400 mb-1">이벤트 상태</p>
+            <p class="text-2xl font-bold text-green-400" id="statStatus">-</p>
         </div>
     </div>
 
-    <!-- 대시보드 -->
-    <div class="section">
-        <h3>현황 (Event ID: 1)</h3>
-        <button onclick="loadDashboard()" style="margin-bottom: 15px; width: 100%;">현황 조회</button>
-        <div class="stat-grid">
-            <div class="stat-box">총 응모자 <span class="stat-num" id="statTotal">-</span></div>
-            <div class="stat-box">당첨자 <span class="stat-num" id="statWinners">-</span></div>
-            <div class="stat-box">SMS 발송 <span class="stat-num" id="statSms">-</span></div>
+    <!-- 중단 2열 -->
+    <div class="grid grid-cols-2 gap-4 mb-6">
+
+        <!-- 등수별 당첨 현황 -->
+        <div class="bg-gray-900 border border-gray-800 rounded-xl p-5">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-sm font-semibold text-gray-300">등수별 당첨 현황</h3>
+                <button onclick="loadDashboard()" class="text-xs text-gray-500 hover:text-white transition">새로고침</button>
+            </div>
+            <div id="winnerList">
+                <p class="text-sm text-gray-500">추첨 전입니다.</p>
+            </div>
         </div>
-        <div class="winner-list" id="winnerList" style="display:none;">
-            <strong>등수별 당첨 현황</strong>
-            <div id="winnerRows"></div>
+
+        <!-- 날짜 설정 -->
+        <div class="bg-gray-900 border border-gray-800 rounded-xl p-5">
+            <h3 class="text-sm font-semibold text-gray-300 mb-2">테스트용 날짜 설정</h3>
+            <p class="text-xs text-gray-500 mb-4">이벤트 상태를 특정 날짜 기준으로 확인할 수 있습니다.</p>
+
+            <div class="flex gap-2 mb-3">
+                <input type="date" id="simulatedDateInput"
+                       class="flex-1 px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white text-sm focus:outline-none focus:border-yellow-400 transition">
+                <button onclick="saveSimulatedDate()"
+                        class="px-4 py-2 bg-yellow-400 hover:bg-yellow-300 text-gray-900 font-semibold rounded-lg text-sm transition">
+                    적용
+                </button>
+                <button onclick="clearSimulatedDate()"
+                        class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg text-sm transition">
+                    초기화
+                </button>
+            </div>
+
+            <div class="flex gap-2">
+                <button onclick="setQuickDate('2025-02-15')"
+                        class="flex-1 py-2 bg-green-500/20 hover:bg-green-500/30 text-green-400 rounded-lg text-xs font-semibold transition">
+                    이벤트 기간 (2/15)
+                </button>
+                <button onclick="setQuickDate('2025-04-02')"
+                        class="flex-1 py-2 bg-purple-500/20 hover:bg-purple-500/30 text-purple-400 rounded-lg text-xs font-semibold transition">
+                    발표 기간 (4/2)
+                </button>
+            </div>
         </div>
     </div>
 
-    <!-- 관리 기능 -->
-    <div class="section">
-        <h3>관리 기능</h3>
-        <button style="width:100%; margin-bottom:10px;" onclick="generateDummy()">더미 참가자 10,000명 생성</button>
-        <div class="progress-bar" id="progressBar">
-            <div class="bar"><div class="fill" id="progressFill"></div></div>
-            <div class="progress-text" id="progressText">0 / 10,000</div>
+    <!-- 하단 2열: 관리 기능 + 더미 생성 -->
+    <div class="grid grid-cols-2 gap-4">
+
+        <!-- 관리 기능 -->
+        <div class="bg-gray-900 border border-gray-800 rounded-xl p-5">
+            <h3 class="text-sm font-semibold text-gray-300 mb-4">관리 기능</h3>
+            <div class="space-y-3">
+                <button onclick="executeDraw()"
+                        class="w-full py-3 bg-red-500 hover:bg-red-400 text-white font-bold rounded-lg transition">
+                    추첨 실행
+                </button>
+                <button onclick="sendRemind()"
+                        class="w-full py-3 bg-blue-500 hover:bg-blue-400 text-white font-semibold rounded-lg transition">
+                    미확인자 리마인드 발송
+                </button>
+                <button onclick="resetData()"
+                        class="w-full py-3 bg-gray-700 hover:bg-gray-600 text-gray-300 font-semibold rounded-lg transition">
+                    DB 초기화
+                </button>
+            </div>
         </div>
-        <button style="width:100%; margin-bottom:10px; background:#2980b9;" onclick="sendRemind()">미확인자 리마인드 발송</button>
-        <button style="width:100%; margin-bottom:10px; background:#e74c3c;" onclick="executeDraw()">추첨 실행</button>
-        <button style="width:100%; background:#888;" onclick="resetData()">DB 초기화</button>
+
+        <!-- 더미 데이터 생성 -->
+        <div class="bg-gray-900 border border-gray-800 rounded-xl p-5">
+            <h3 class="text-sm font-semibold text-gray-300 mb-4">더미 데이터 생성</h3>
+            <button onclick="generateDummy()"
+                    class="w-full py-3 bg-gray-800 hover:bg-gray-700 text-white font-semibold rounded-lg border border-gray-700 transition mb-4">
+                더미 참가자 10,000명 생성
+            </button>
+
+            <!-- 진행률 바 -->
+            <div id="progressBar" class="hidden">
+                <div class="w-full h-3 bg-gray-800 rounded-full overflow-hidden">
+                    <div id="progressFill" class="h-full bg-green-500 rounded-full transition-all duration-300" style="width: 0%"></div>
+                </div>
+                <p id="progressText" class="text-xs text-gray-500 mt-2">0 / 10,000</p>
+            </div>
+        </div>
     </div>
+
+</main>
 
 <script>
     window.onload = function() {
         var savedDate = localStorage.getItem('fairDrawDate');
-        if(savedDate) document.getElementById('simulatedDateInput').value = savedDate;
+        if (savedDate) document.getElementById('simulatedDateInput').value = savedDate;
         loadDashboard();
     };
 
@@ -97,9 +152,10 @@
 
     function saveSimulatedDate() {
         var dateVal = document.getElementById('simulatedDateInput').value;
-        if(dateVal) {
+        if (dateVal) {
             localStorage.setItem('fairDrawDate', dateVal);
             alert('가상 날짜가 적용되었습니다.');
+            loadDashboard();
         }
     }
 
@@ -107,30 +163,37 @@
         localStorage.removeItem('fairDrawDate');
         document.getElementById('simulatedDateInput').value = '';
         alert('실제 날짜로 초기화되었습니다.');
+        loadDashboard();
     }
 
     function loadDashboard() {
         fetch('/api/admin/dashboard?eventId=1')
             .then(function(res) { return res.json(); })
             .then(function(data) {
-                if(data.success) {
+                if (data.success) {
                     var d = data.data;
-                    document.getElementById('statTotal').innerText = d.totalParticipants + '명';
-                    document.getElementById('statSms').innerText = d.smsCount + '건';
+                    document.getElementById('statTotal').innerText = d.totalParticipants.toLocaleString();
+                    document.getElementById('statSms').innerText = d.smsCount.toLocaleString();
 
-                    if(d.winnerCounts && d.winnerCounts.length > 0) {
+                    if (d.winnerCounts && d.winnerCounts.length > 0) {
                         var total = 0;
                         var html = '';
                         d.winnerCounts.forEach(function(item) {
-                            html += '<div class="winner-row"><span>' + item.rankType + '등 (' + item.prizeName + ')</span><span>' + item.cnt + '명</span></div>';
+                            html += '<div class="flex justify-between py-2 border-b border-gray-800 last:border-0">'
+                                + '<span class="text-sm text-gray-300">' + item.rankType + '등 (' + item.prizeName + ')</span>'
+                                + '<span class="text-sm font-semibold text-white">' + item.cnt + '명</span>'
+                                + '</div>';
                             total += item.cnt;
                         });
-                        document.getElementById('statWinners').innerText = total + '명';
-                        document.getElementById('winnerRows').innerHTML = html;
-                        document.getElementById('winnerList').style.display = 'block';
+                        document.getElementById('statWinners').innerText = total.toLocaleString();
+                        document.getElementById('winnerList').innerHTML = html;
+                        document.getElementById('statStatus').innerText = 'DRAWN';
+                        document.getElementById('statStatus').className = 'text-2xl font-bold text-yellow-400';
                     } else {
                         document.getElementById('statWinners').innerText = '-';
-                        document.getElementById('winnerList').style.display = 'none';
+                        document.getElementById('winnerList').innerHTML = '<p class="text-sm text-gray-500">추첨 전입니다.</p>';
+                        document.getElementById('statStatus').innerText = 'ACTIVE';
+                        document.getElementById('statStatus').className = 'text-2xl font-bold text-green-400';
                     }
                 }
             });
@@ -141,17 +204,17 @@
         var batchSize = 500;
         var created = 0;
 
-        document.getElementById('progressBar').style.display = 'block';
+        document.getElementById('progressBar').className = 'block';
         document.getElementById('progressFill').style.width = '0%';
-        document.getElementById('progressText').innerText = '0 / ' + totalTarget;
+        document.getElementById('progressText').innerText = '0 / ' + totalTarget.toLocaleString();
 
         function nextBatch() {
             var remaining = totalTarget - created;
             var currentBatch = Math.min(batchSize, remaining);
 
-            if(currentBatch <= 0) {
+            if (currentBatch <= 0) {
                 document.getElementById('progressFill').style.width = '100%';
-                document.getElementById('progressText').innerText = totalTarget + ' / ' + totalTarget + ' (완료)';
+                document.getElementById('progressText').innerText = totalTarget.toLocaleString() + ' / ' + totalTarget.toLocaleString() + ' (완료)';
                 loadDashboard();
                 return;
             }
@@ -162,11 +225,11 @@
                     created += currentBatch;
                     var percent = Math.round((created / totalTarget) * 100);
                     document.getElementById('progressFill').style.width = percent + '%';
-                    document.getElementById('progressText').innerText = created + ' / ' + totalTarget;
+                    document.getElementById('progressText').innerText = created.toLocaleString() + ' / ' + totalTarget.toLocaleString();
                     nextBatch();
                 })
                 .catch(function() {
-                    document.getElementById('progressText').innerText = '오류 발생 (' + created + '명까지 생성됨)';
+                    document.getElementById('progressText').innerText = '오류 발생 (' + created.toLocaleString() + '명까지 생성됨)';
                 });
         }
 
@@ -174,7 +237,7 @@
     }
 
     function executeDraw() {
-        if(!confirm('추첨을 실행하시겠습니까? 실행 후 취소할 수 없습니다.')) return;
+        if (!confirm('추첨을 실행하시겠습니까? 실행 후 취소할 수 없습니다.')) return;
         fetch('/api/admin/draw?eventId=1', { method: 'POST' })
             .then(function(res) { return res.json(); })
             .then(function(data) {
@@ -192,7 +255,7 @@
     }
 
     function resetData() {
-        if(!confirm('모든 참가자/당첨 데이터가 삭제됩니다. 초기화하시겠습니까?')) return;
+        if (!confirm('모든 참가자/당첨 데이터가 삭제됩니다. 초기화하시겠습니까?')) return;
         fetch('/api/admin/reset?eventId=1', { method: 'POST' })
             .then(function(res) { return res.json(); })
             .then(function(data) {
@@ -200,9 +263,7 @@
                 loadDashboard();
             });
     }
-
 </script>
 
 </body>
-
 </html>
