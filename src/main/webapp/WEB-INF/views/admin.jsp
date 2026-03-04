@@ -14,14 +14,14 @@
 <body class="bg-gray-950 text-white min-h-screen flex flex-col">
 
 <!-- 네비게이션 바 -->
-<nav class="flex items-center justify-between px-8 py-6 bg-gray-950/80 backdrop-blur-sm border-b border-gray-800">
-    <a href="/" class="flex items-center gap-2 text-2xl font-bold tracking-tight">
-        <img src="/static/logo.png" alt="FairDraw" class="h-12 w-11">
+<nav class="flex items-start justify-between px-8 pt-3 pb-5 pr-5 bg-gray-950/80 backdrop-blur-sm border-b border-gray-800">
+    <a href="/" class="flex items-center gap-2 text-2xl font-bold tracking-tight mt-2">
+        <img src="/static/logo.png" alt="FairDraw" class="h-11 w-11">
         <span class="text-yellow-400">Fair</span><span class="text-white">Draw</span>
     </a>
-    <div class="flex items-center gap-4">
+    <div class="flex items-center gap-2">
         <span class="text-xs text-gray-500 bg-gray-800 px-3 py-1 rounded-full">Admin</span>
-        <a href="/" class="text-sm text-gray-400 hover:text-white transition">메인으로</a>
+        <a href="/" class="text-xs text-gray-400 hover:text-white transition">메인으로</a>
     </div>
 </nav>
 
