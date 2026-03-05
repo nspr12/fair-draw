@@ -62,10 +62,10 @@ public class EventController {
             today = LocalDate.now();
         }
 
-        LocalDate eventStart = LocalDate.of(2025, 2, 1);
-        LocalDate eventEnd = LocalDate.of(2025, 3, 31);
-        LocalDate announceStart = LocalDate.of(2025, 4, 1);
-        LocalDate announceEnd = LocalDate.of(2025, 4, 15);
+        LocalDate eventStart = LocalDate.of(2026, 2, 1);            //
+        LocalDate eventEnd = LocalDate.of(2026, 3, 31);             //
+        LocalDate announceStart = LocalDate.of(2026, 4, 1);         //
+        LocalDate announceEnd = LocalDate.of(2026, 4, 15);          //
         LocalDate remindDate = announceStart.plusDays(10);
 
         String period;

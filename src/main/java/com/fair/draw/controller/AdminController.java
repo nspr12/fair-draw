@@ -28,9 +28,17 @@ public class AdminController {
     private final SmsLogMapper smsLogMapper;
 
     // 추첨실행
-    @PostMapping("/draw")
+   /* @PostMapping("/draw")
     public ResponseEntity<ApiResponse<Void>> draw(@RequestParam Long eventId) {
         drawService.draw(eventId);
+        return ResponseEntity.ok(ApiResponse.ok("추첨이 성공적으로 완료되었습니다.", null));
+    }*/
+    //추첨 실행 2
+    @PostMapping("/draw")
+    public ResponseEntity<ApiResponse<Void>> draw(
+            @RequestParam Long eventId,
+            @RequestParam(required = false) String simulatedDate) {
+        drawService.draw(eventId, simulatedDate);
         return ResponseEntity.ok(ApiResponse.ok("추첨이 성공적으로 완료되었습니다.", null));
     }
 

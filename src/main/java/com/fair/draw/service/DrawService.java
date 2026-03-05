@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,14 +32,33 @@ public class DrawService {
      * 파라미터에서 내정자 제거
      */
     @Transactional
-    public void draw(Long eventId) {
-        // 1. 이벤트 상태 검증
+    public void draw(Long eventId, String simulatedDate) {  //String simulatedDate 추가
+        // 1. 이벤트 존재 여부 확인
         Event event = eventMapper.findById(eventId);
         if (event == null) {
             throw new IllegalArgumentException("존재하지 않는 이벤트입니다.");
         }
+
+        // 2. 이벤트 상태 검증 (ACTIVE 상태에서만 추첨 가능)
         if (!EventStatus.ACTIVE.name().equals(event.getStatus())) {
-            throw new IllegalStateException("추첨 가능한 상태가 아닙니다.");
+            throw new IllegalStateException("추첨 가능한 상태가 아닙니다. (현재: " + event.getStatus() + ")");
+        }
+
+        // 3. 이벤트 종료일 검증 (종료 후에만 추첨 가능)
+//        LocalDate today = LocalDate.now();
+//        if (!today.isAfter(event.getEndDate())) {
+//            throw new IllegalStateException("이벤트 종료 후 추첨이 가능합니다. (종료일: " + event.getEndDate() + ")");
+//        }
+        // 이벤트 종료일 검증 (simulatedDate 지원)
+        LocalDate today;
+        if (simulatedDate != null && !simulatedDate.isEmpty()) {
+            today = LocalDate.parse(simulatedDate);
+        } else {
+            today = LocalDate.now();
+        }
+
+        if (!today.isAfter(event.getEndDate())) {
+            throw new IllegalStateException("이벤트 종료 후 추첨이 가능합니다. (종료일: " + event.getEndDate() + ")");
         }
 
         // 2. 경품 정책 조회

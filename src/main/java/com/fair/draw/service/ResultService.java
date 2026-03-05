@@ -1,15 +1,14 @@
 package com.fair.draw.service;
 
+import com.fair.draw.domain.Event;
 import com.fair.draw.domain.EventPrize;
 import com.fair.draw.domain.Participant;
 import com.fair.draw.domain.Winner;
 import com.fair.draw.dto.ResultResponse;
+import com.fair.draw.enums.EventStatus;
 import com.fair.draw.enums.MessageType;
 import com.fair.draw.enums.PrizeStatus;
-import com.fair.draw.mapper.EventPrizeMapper;
-import com.fair.draw.mapper.ParticipantMapper;
-import com.fair.draw.mapper.ResultCheckLogMapper;
-import com.fair.draw.mapper.WinnerMapper;
+import com.fair.draw.mapper.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -22,6 +21,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ResultService {
 
+    private final EventMapper eventMapper;
     private final ParticipantMapper participantMapper;
     private final WinnerMapper winnerMapper;
     private final ResultCheckLogMapper resultCheckLogMapper;
@@ -30,6 +30,19 @@ public class ResultService {
 
     @Transactional
     public ResultResponse checkResult(Long eventId, String phoneNumber) {
+
+        // 1. 이벤트 상태 확인 (추첨 전이면 안내 메시지)
+        Event event = eventMapper.findById(eventId);
+        if (event == null) {
+            throw new IllegalArgumentException("존재하지 않는 이벤트입니다.");
+        }
+
+        if (!EventStatus.DRAWN.name().equals(event.getStatus())) {
+            return ResultResponse.builder()
+                    .isWinner(false)
+                    .message("아직 추첨이 진행되지 않았습니다. 추첨 완료 후 다시 확인해주세요.")
+                    .build();
+        }
 
         // 1. 참가자 조회 (응모 내역 확인)
         Participant participant = participantMapper.findByEventAndPhone(eventId, phoneNumber);

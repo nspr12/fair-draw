@@ -74,11 +74,11 @@
             </div>
 
             <div class="flex gap-2">
-                <button onclick="setQuickDate('2025-02-15')"
+                <button onclick="setQuickDate('2026-02-15')"
                         class="flex-1 py-2 bg-green-500/20 hover:bg-green-500/30 text-green-400 rounded-lg text-xs font-semibold transition">
                     이벤트 기간 (2/15)
                 </button>
-                <button onclick="setQuickDate('2025-04-02')"
+                <button onclick="setQuickDate('2026-04-02')"
                         class="flex-1 py-2 bg-purple-500/20 hover:bg-purple-500/30 text-purple-400 rounded-lg text-xs font-semibold transition">
                     발표 기간 (4/2)
                 </button>
@@ -229,7 +229,12 @@
 
     function executeDraw() {
         if (!confirm('추첨을 실행하시겠습니까? 실행 후 취소할 수 없습니다.')) return;
-        fetch('/api/admin/draw?eventId=1', { method: 'POST' })
+        var simulatedDate = localStorage.getItem('fairDrawDate');
+        var url = '/api/admin/draw?eventId=1';
+        if (simulatedDate) {
+            url += '&simulatedDate=' + simulatedDate;
+        }
+        fetch(url, { method: 'POST' })
             .then(function(res) { return res.json(); })
             .then(function(data) {
                 alert(data.success ? '추첨이 완료되었습니다.' : '오류: ' + data.message);
