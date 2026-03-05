@@ -5,10 +5,10 @@
         <span class="text-yellow-400">Fair</span><span class="text-white">Draw</span>
     </a>
     <div class="flex items-center gap-2">
-        <a href="/signup" class="text-xs text-gray-400 hover:text-white transition">회원가입</a>
+        <a href="/signup" class="text-xs text-gray-400 hover:text-white transition">로그인</a>
         <span class="text-gray-700 text-xs">|</span>
-        <a href="/login" class="text-xs text-gray-400 hover:text-white transition">로그인</a>
+        <a href="/login" class="text-xs text-gray-400 hover:text-white transition">회원가입</a>
         <span class="text-gray-700 text-xs">|</span>
-        <a href="/admin" class="text-xs text-gray-400 hover:text-white transition">관리자</a>
+        <a href="/admin" class="text-xs text-gray-400 hover:text-white transition">admin</a>
     </div>
 </nav>

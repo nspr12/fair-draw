@@ -1,19 +1,10 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FairDraw Admin</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap');
-        body { font-family: 'Noto Sans KR', sans-serif; }
-    </style>
+<%@ include file="layout/header.jsp" %>
+<title>FairDraw Admin</title>
 </head>
 <body class="bg-gray-950 text-white min-h-screen flex flex-col">
 
-<!-- 네비게이션 바 -->
+<!-- 네비게이션 바 (admin 전용) -->
 <nav class="flex items-start justify-between px-8 pt-3 pb-5 pr-5 bg-gray-950/80 backdrop-blur-sm border-b border-gray-800">
     <a href="/" class="flex items-center gap-2 text-2xl font-bold tracking-tight mt-2">
         <img src="/static/logo.png" alt="FairDraw" class="h-11 w-11">
@@ -28,7 +19,6 @@
 <!-- 대시보드 콘텐츠 -->
 <main class="flex-1 px-8 py-8 max-w-6xl mx-auto w-full">
 
-    <!-- 페이지 제목 -->
     <h1 class="text-xl font-bold mb-6">관리자 대시보드</h1>
 
     <!-- 상단 통계 카드 4열 -->
@@ -96,7 +86,7 @@
         </div>
     </div>
 
-    <!-- 하단 2열: 관리 기능 + 더미 생성 -->
+    <!-- 하단 2열 -->
     <div class="grid grid-cols-2 gap-4">
 
         <!-- 관리 기능 -->
@@ -126,7 +116,6 @@
                 더미 참가자 10,000명 생성
             </button>
 
-            <!-- 진행률 바 -->
             <div id="progressBar" class="hidden">
                 <div class="w-full h-3 bg-gray-800 rounded-full overflow-hidden">
                     <div id="progressFill" class="h-full bg-green-500 rounded-full transition-all duration-300" style="width: 0%"></div>
@@ -137,6 +126,8 @@
     </div>
 
 </main>
+
+<%@ include file="layout/footer.jsp" %>
 
 <script>
     window.onload = function() {
@@ -264,6 +255,3 @@
             });
     }
 </script>
-
-</body>
-</html>
