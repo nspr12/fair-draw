@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Clock;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
@@ -21,6 +22,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class EventController {
 
+    private final Clock clock;  // 추가
     private final EventParticipantService participantService;
     private final VerificationService verificationService;
     private final ResultService resultService;
@@ -49,24 +51,20 @@ public class EventController {
         return ResponseEntity.ok(ApiResponse.ok(response));
     }
 
-    /* 날짜 기반 이벤트 상태 확인
-     * 가상 날짜를 받아서 현재 어떤 기간인지 반환 */
+/*  변경: 메서드 전체 수정 — simulatedDate 제거, clock 사용
+    하드코딩 날짜는 DB 조회로 변경 예정, 지금은 clock만 적용) */
     @GetMapping("/status")
     public ResponseEntity<ApiResponse<Map<String, Object>>> getEventStatus(
-            @RequestParam(required = false) String simulatedDate) {
+            @RequestParam(required = false) Long eventId) { // 변경: simulatedDate → eventId
 
-        LocalDate today;
-        if (simulatedDate != null && !simulatedDate.isEmpty()) {
-            today = LocalDate.parse(simulatedDate);
-        } else {
-            today = LocalDate.now();
-        }
+        LocalDate today = LocalDate.now(clock); //변경 : clock 사용
 
+//         ☆ TODO DB에서 조회하도록 변경 예정
         LocalDate eventStart = LocalDate.of(2026, 2, 1);            //
         LocalDate eventEnd = LocalDate.of(2026, 3, 31);             //
         LocalDate announceStart = LocalDate.of(2026, 4, 1);         //
         LocalDate announceEnd = LocalDate.of(2026, 4, 15);          //
-        LocalDate remindDate = announceStart.plusDays(10);
+        LocalDate remindDate = announceStart.plusDays(10);          //
 
         String period;
         if (today.isBefore(eventStart)) {

@@ -61,24 +61,16 @@
         path: '/static/balloons.json'
     });
 
-    var simulatedDate = localStorage.getItem('fairDrawDate');
-    var url = '/api/event/status?eventId=1';
-    if (simulatedDate) {
-        url += '&simulatedDate=' + simulatedDate;
-    }
-
-    fetch(url)
+    // 변경: simulatedDate 로직 전체 제거
+    // 서버의 Clock이 알아서 현재 날짜를 판단하므로 파라미터 불필요
+    fetch('/api/event/status?eventId=1')    //// TODO eventId를 URL 파라미터에서 동적으로 받도록 변경
         .then(function(res) { return res.json(); })
         .then(function(data) {
             var badge = document.getElementById('eventStatusBadge');
             if (data.success) {
-                var label = data.data.periodLabel;
-                if (simulatedDate) {
-                    label += ' (' + simulatedDate + ' 기준)';
-                }
-                badge.innerText = label;
+                badge.innerText = data.data.periodLabel;    //변경: simulatedDate 표시 로직 제거
 
-                if (data.data.period === 'ACTIVE_PERIOD') {
+                if (data.data.period === 'EVENT_PERIOD') {  //수정 -> 서버응답과일치
                     badge.className = 'inline-block px-4 py-1.5 rounded-full text-xs font-semibold bg-green-500/20 text-green-400 mb-8';
                 } else if (data.data.period === 'ANNOUNCE_PERIOD') {
                     badge.className = 'inline-block px-4 py-1.5 rounded-full text-xs font-semibold bg-red-500/20 text-red-400 mb-8';

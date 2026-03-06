@@ -130,9 +130,9 @@
 <%@ include file="layout/footer.jsp" %>
 
 <script>
+    // 변경: 페이지 로드 시 서버의 현재 시간을 가져와서 표시
     window.onload = function() {
-        var savedDate = localStorage.getItem('fairDrawDate');
-        if (savedDate) document.getElementById('simulatedDateInput').value = savedDate;
+        loadServerTime();
         loadDashboard();
     };
 
@@ -141,21 +141,43 @@
         saveSimulatedDate();
     }
 
+    // 변경: localStorage 대신 서버 API 호출
     function saveSimulatedDate() {
         var dateVal = document.getElementById('simulatedDateInput').value;
         if (dateVal) {
-            localStorage.setItem('fairDrawDate', dateVal);
-            alert('가상 날짜가 적용되었습니다.');
-            loadDashboard();
+            fetch('/api/dev/time?date=' + dateVal, { method: 'POST' })
+                .then(function(res) { return res.json(); })
+                .then(function(data) {
+                    alert(data.message);
+                    loadServerTime();
+                    loadDashboard();
+                });
         }
     }
 
+    // 변경: localStorage 대신 서버 API 호출
     function clearSimulatedDate() {
-        localStorage.removeItem('fairDrawDate');
-        document.getElementById('simulatedDateInput').value = '';
-        alert('실제 날짜로 초기화되었습니다.');
-        loadDashboard();
+        fetch('/api/dev/time/reset', { method: 'POST' })
+            .then(function(res) { return res.json(); })
+            .then(function(data) {
+                document.getElementById('simulatedDateInput').value = '';
+                alert(data.message);
+                loadServerTime();
+                loadDashboard();
+            });
     }
+
+    // 추가: 서버 시간 조회해서 화면에 표시
+    function loadServerTime() {
+        fetch('/api/dev/time')
+            .then(function(res) { return res.json(); })
+            .then(function(data) {
+                if (data.success) {
+                    document.getElementById('simulatedDateInput').value = data.data;
+                }
+            });
+    }
+
 
     function loadDashboard() {
         fetch('/api/admin/dashboard?eventId=1')
@@ -227,14 +249,11 @@
         nextBatch();
     }
 
+    // 변경: simulatedDate 파라미터 제거 (서버 Clock이 알아서 처리)
     function executeDraw() {
         if (!confirm('추첨을 실행하시겠습니까? 실행 후 취소할 수 없습니다.')) return;
-        var simulatedDate = localStorage.getItem('fairDrawDate');
-        var url = '/api/admin/draw?eventId=1';
-        if (simulatedDate) {
-            url += '&simulatedDate=' + simulatedDate;
-        }
-        fetch(url, { method: 'POST' })
+
+        fetch('/api/admin/draw?eventId=1', { method: 'POST' })
             .then(function(res) { return res.json(); })
             .then(function(data) {
                 alert(data.success ? '추첨이 완료되었습니다.' : '오류: ' + data.message);

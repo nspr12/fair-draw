@@ -34,11 +34,9 @@ public class AdminController {
         return ResponseEntity.ok(ApiResponse.ok("추첨이 성공적으로 완료되었습니다.", null));
     }*/
     //추첨 실행 2
-    @PostMapping("/draw")
-    public ResponseEntity<ApiResponse<Void>> draw(
-            @RequestParam Long eventId,
-            @RequestParam(required = false) String simulatedDate) {
-        drawService.draw(eventId, simulatedDate);
+    @PostMapping("/draw")   // simulatedDate 파라미터 제거
+    public ResponseEntity<ApiResponse<Void>> draw(@RequestParam Long eventId) {
+        drawService.draw(eventId);
         return ResponseEntity.ok(ApiResponse.ok("추첨이 성공적으로 완료되었습니다.", null));
     }
 

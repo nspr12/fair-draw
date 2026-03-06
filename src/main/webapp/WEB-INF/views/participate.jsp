@@ -49,10 +49,7 @@
 <%@ include file="layout/footer.jsp" %>
 
 <script>
-    var simulatedDate = localStorage.getItem('fairDrawDate');
-    if (simulatedDate) {
-        document.getElementById('eventStatusBadge').innerText = '테스트 모드: ' + simulatedDate + ' 기준';
-    }
+    //변경: simulatedDate 로직 제거
 
     function sendVerification() {
         var phone = document.getElementById('phoneNumber').value;

@@ -2,6 +2,7 @@ spring:
   application:
     name: fair-draw
   profiles:
+    active: dev
     include: secret
   mvc:
     view:

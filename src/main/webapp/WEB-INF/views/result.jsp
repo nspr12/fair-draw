@@ -46,16 +46,12 @@
 <%@ include file="layout/footer.jsp" %>
 
 <script>
-    var simulatedDate = localStorage.getItem('fairDrawDate');
-    if (simulatedDate) {
-        document.getElementById('eventStatusBadge').innerText = '테스트 모드: ' + simulatedDate + ' 기준';
-    }
+    // 변경: simulatedDate 로직 제거 (아래 3줄 삭제)
 
     function checkResult() {
         var eventId = document.getElementById('eventId').value;
         var phone = document.getElementById('phoneNumber').value;
         var resultBox = document.getElementById('resultBox');
-        var simulatedDate = localStorage.getItem('fairDrawDate');
 
         if (!phone) {
             alert('휴대폰 번호를 입력해주세요.');
@@ -65,9 +61,6 @@
         resultBox.className = 'hidden';
 
         var url = '/api/event/result?eventId=' + eventId + '&phoneNumber=' + phone;
-        if (simulatedDate) {
-            url += '&simulatedDate=' + simulatedDate;
-        }
 
         fetch(url)
             .then(function(res) { return res.json(); })
