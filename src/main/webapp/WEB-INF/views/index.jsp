@@ -42,24 +42,25 @@
 
         <!-- 이벤트 정보 영역 -->
         <div id="eventInfo" class="hidden bg-gray-800/50 rounded-xl p-4 mb-6 text-left text-sm">
-            <p id="eventTitle" class="font-bold text-white mb-2"></p>
-            <div class="space-y-1.5 text-gray-400 text-xs">
-                <div class="flex justify-between">
-                    <span>응모기간</span>
+            <p id="eventTitle" class="font-bold text-white mb-2 text-center"></p>
+            <div class="space-y-1.5 text-gray-400 text-xs flex flex-col items-center">
+                <div class="flex gap-4 w-64">
+                    <span class="w-20">응모기간</span>
                     <span id="eventDates" class="text-gray-300"></span>
                 </div>
-                <div class="flex justify-between">
-                    <span>추첨인원</span>
+                <div class="flex gap-4 w-64">
+                    <span class="w-20">추첨인원</span>
                     <span id="eventPrizeCount" class="text-gray-300"></span>
                 </div>
-                <div class="flex justify-between">
-                    <span>발표일</span>
+                <div class="flex gap-4 w-64">
+                    <span class="w-20">발표일</span>
                     <span id="eventAnnounceDate" class="text-gray-300"></span>
                 </div>
             </div>
-        </div>
+        </div>  <!-- 여기서 eventInfo 닫기 -->
 
-        <div class="space-y-3">
+        <!-- 버튼은 바깥에 -->
+        <div class="space-y-3 mt-auto">
             <a href="/participate"
                class="block w-full py-3.5 bg-yellow-400 hover:bg-yellow-300 text-gray-900 font-bold rounded-lg transition text-center">
                 응모하기
@@ -68,8 +69,8 @@
                class="block w-full py-3.5 bg-gray-800 hover:bg-gray-700 text-white font-semibold rounded-lg border border-gray-700 transition text-center">
                 당첨 결과 확인
             </a>
-        </div>
-    </div>
+        </div>  <!-- 버튼 div 닫기 -->
+    </div>  <!-- 카드 div (bg-gray-900/80) 닫기 -->
 </main>
 
 <%@ include file="layout/footer.jsp" %>
