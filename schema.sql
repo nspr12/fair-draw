@@ -84,3 +84,11 @@ CREATE TABLE sms_log (
                          INDEX idx_sms_participant (participant_id),
                          INDEX idx_sms_sent_at (sent_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='문자 발송 이력';
+
+--
+ALTER TABLE event
+    ADD COLUMN description TEXT AFTER title,
+    ADD COLUMN thumbnail_url VARCHAR(500) AFTER description,
+    ADD COLUMN announce_start_date DATE AFTER draw_date,
+    ADD COLUMN announce_end_date DATE AFTER announce_start_date,
+    ADD COLUMN max_participants INT DEFAULT 100000 AFTER announce_end_date;

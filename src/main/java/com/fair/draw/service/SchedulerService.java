@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.time.Clock;
 import java.time.LocalDate;
 
 @Slf4j
@@ -14,6 +15,7 @@ import java.time.LocalDate;
 @RequiredArgsConstructor
 public class SchedulerService {
 
+    private final Clock clock;  //Clock 주입 추가
     private final EventMapper eventMapper;
     private final ResultService resultService;
 
@@ -31,8 +33,13 @@ public class SchedulerService {
             return;
         }
 
-        LocalDate remindDate = event.getDrawDate().plusDays(10);
-        if (LocalDate.now().isBefore(remindDate)) {
+        // 변경: Clock 사용 + announceStartDate 기반으로 리마인드 날짜 계산
+        LocalDate remindDate = event.getAnnounceStartDate() != null
+                ? event.getAnnounceStartDate().plusDays(10)
+                : event.getDrawDate().plusDays(10);
+
+        LocalDate today = LocalDate.now(clock);  // 변경: clock 사용
+        if (today.isBefore(remindDate)) {
             log.info("[스케줄러] 리마인드 발송일({})이 아직 도래하지 않았습니다.", remindDate);
             return;
         }

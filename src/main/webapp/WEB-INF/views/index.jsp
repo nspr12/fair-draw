@@ -21,20 +21,42 @@
 
 <div id="lottie-bg"></div>
 
-<%--nav바 iclude--%>
 <%@ include file="layout/nav.jsp" %>
 
 <main class="relative z-10 flex-1 flex items-center justify-center px-4 py-10">
-    <div class="bg-gray-900/80 backdrop-blur-sm border border-gray-800 rounded-2xl p-10 w-full max-w-md h-[520px] text-center shadow-2xl flex flex-col justify-center">
+    <div class="bg-gray-900/80 backdrop-blur-sm border border-gray-800 rounded-2xl p-10 w-full max-w-md text-center shadow-2xl flex flex-col justify-center">
 
         <h1 class="text-3xl font-bold mb-1">
             <span class="text-yellow-400">Fair</span><span class="text-white">Draw</span>
         </h1>
-        <p class="text-gray-400 text-sm mb-6">공정하고 투명한 프로모션 추첨</p>
+        <p class="text-gray-400 text-sm mb-4">공정하고 투명한 프로모션 추첨</p>
+
+        <!-- 테스트 기준 날짜 표시 (dev 모드에서만 의미있음) -->
+        <div id="devDateBadge" class="hidden text-xs text-yellow-400 bg-yellow-400/10 px-3 py-1 rounded-full mb-3">
+        </div>
 
         <div id="eventStatusBadge"
-             class="inline-block px-4 py-1.5 rounded-full text-xs font-semibold bg-gray-800 text-gray-300 mb-8">
+             class="inline-block px-4 py-1.5 rounded-full text-xs font-semibold bg-gray-800 text-gray-300 mb-6">
             상태 확인 중...
+        </div>
+
+        <!-- 이벤트 정보 영역 -->
+        <div id="eventInfo" class="hidden bg-gray-800/50 rounded-xl p-4 mb-6 text-left text-sm">
+            <p id="eventTitle" class="font-bold text-white mb-2"></p>
+            <div class="space-y-1.5 text-gray-400 text-xs">
+                <div class="flex justify-between">
+                    <span>응모기간</span>
+                    <span id="eventDates" class="text-gray-300"></span>
+                </div>
+                <div class="flex justify-between">
+                    <span>추첨인원</span>
+                    <span id="eventPrizeCount" class="text-gray-300"></span>
+                </div>
+                <div class="flex justify-between">
+                    <span>발표일</span>
+                    <span id="eventAnnounceDate" class="text-gray-300"></span>
+                </div>
+            </div>
         </div>
 
         <div class="space-y-3">
@@ -61,21 +83,38 @@
         path: '/static/balloons.json'
     });
 
-    // 변경: simulatedDate 로직 전체 제거
-    // 서버의 Clock이 알아서 현재 날짜를 판단하므로 파라미터 불필요
-    fetch('/api/event/status?eventId=1')    //// TODO eventId를 URL 파라미터에서 동적으로 받도록 변경
+    fetch('/api/event/status?eventId=1')
         .then(function(res) { return res.json(); })
         .then(function(data) {
-            var badge = document.getElementById('eventStatusBadge');
-            if (data.success) {
-                badge.innerText = data.data.periodLabel;    //변경: simulatedDate 표시 로직 제거
+            if (!data.success) return;
 
-                if (data.data.period === 'EVENT_PERIOD') {  //수정 -> 서버응답과일치
-                    badge.className = 'inline-block px-4 py-1.5 rounded-full text-xs font-semibold bg-green-500/20 text-green-400 mb-8';
-                } else if (data.data.period === 'ANNOUNCE_PERIOD') {
-                    badge.className = 'inline-block px-4 py-1.5 rounded-full text-xs font-semibold bg-red-500/20 text-red-400 mb-8';
-                }
+            var d = data.data;
+
+            // 상태 뱃지
+            var badge = document.getElementById('eventStatusBadge');
+            badge.innerText = d.periodLabel;
+
+            if (d.period === 'EVENT_PERIOD') {
+                badge.className = 'inline-block px-4 py-1.5 rounded-full text-xs font-semibold bg-green-500/20 text-green-400 mb-6';
+            } else if (d.period === 'ANNOUNCE_PERIOD') {
+                badge.className = 'inline-block px-4 py-1.5 rounded-full text-xs font-semibold bg-purple-500/20 text-purple-400 mb-6';
+            } else if (d.period === 'FINISHED') {
+                badge.className = 'inline-block px-4 py-1.5 rounded-full text-xs font-semibold bg-red-500/20 text-red-400 mb-6';
             }
+
+            // 테스트 기준 날짜 표시
+            var devBadge = document.getElementById('devDateBadge');
+            devBadge.innerText = '테스트 기준일: ' + d.currentDate;
+            devBadge.className = 'text-xs text-yellow-400 bg-yellow-400/10 px-3 py-1 rounded-full mb-3 inline-block';
+
+            // 이벤트 정보 표시
+            var infoBox = document.getElementById('eventInfo');
+            infoBox.className = 'bg-gray-800/50 rounded-xl p-4 mb-6 text-left text-sm';
+
+            document.getElementById('eventTitle').innerText = d.title || '이벤트';
+            document.getElementById('eventDates').innerText = d.startDate + ' ~ ' + d.endDate;
+            document.getElementById('eventPrizeCount').innerText = (d.totalPrizeCount || 0) + '명';
+            document.getElementById('eventAnnounceDate').innerText = d.announceStartDate || '-';
         })
         .catch(function(e) { console.error(e); });
 </script>

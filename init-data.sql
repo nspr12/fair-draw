@@ -8,3 +8,12 @@ INSERT INTO event_prize (event_id, rank_type, prize_name, prize_count) VALUES
                                                                            (1, 2, '에어팟 프로 2세대', 5),
                                                                            (1, 3, '신세계 상품권 5만원권', 44),
                                                                            (1, 4, '스타벅스 아이스 아메리카노 T', 950);
+
+
+--
+UPDATE event SET
+                 description = '한정판 스니커즈 래플 이벤트',
+                 announce_start_date = '2026-04-01',
+                 announce_end_date = '2026-04-15',
+                 max_participants = 100000
+WHERE id = 1;

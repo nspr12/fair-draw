@@ -18,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class EventParticipantService {
 
-    private static final int MAX_PARTICIPANTS = 100000; // 최대 10만 명으로 확장
+//    private static final int MAX_PARTICIPANTS = 100000; // 최대 10만 명으로 확장
 
     private final EventMapper eventMapper;
     private final ParticipantMapper participantMapper;
@@ -52,8 +52,13 @@ public class EventParticipantService {
 
         // 4. [핵심] 참가 인원 제한 & 동시성 제어 (비관적 락 - FOR UPDATE)
         // 수천 명이 동시에 클릭해도 DB 단에서 줄을 세워 정확하게 카운트.
-        int currentCount = participantMapper.countByEventForUpdate(request.getEventId());
+/*        int currentCount = participantMapper.countByEventForUpdate(request.getEventId());
         if (currentCount >= MAX_PARTICIPANTS) {
+            throw new IllegalStateException("죄송합니다. 이벤트 참가 인원이 마감되었습니다.");
+        }*/
+        // 4. 변경: 하드코딩 대신 DB에서 max_participants 조회
+        int currentCount = participantMapper.countByEventForUpdate(request.getEventId());
+        if (currentCount >= event.getMaxParticipants()) {  // 변경: MAX_PARTICIPANTS → event.getMaxParticipants()
             throw new IllegalStateException("죄송합니다. 이벤트 참가 인원이 마감되었습니다.");
         }
 
